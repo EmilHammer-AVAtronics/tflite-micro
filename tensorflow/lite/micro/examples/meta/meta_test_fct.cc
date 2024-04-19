@@ -14,25 +14,11 @@ limitations under the License.
 ==============================================================================*/
 
 #include <math.h>
-
 #include "meta_test_fct.h"
-
 #include "tensorflow/lite/core/c/common.h"
-#include "tensorflow/lite/micro/examples/meta/models/meta_float_model_data.h"
-#include "tensorflow/lite/micro/examples/meta/models/meta_int8_model_data.h"
-
-//Without POW
-// #include "tensorflow/lite/micro/examples/meta/models/test_models/1242/DPCRN-m32-quant-full-int-InOuts-float32_flatbuffer.h" // Input error
-// #include "tensorflow/lite/micro/examples/meta/models/test_models/1242/DPCRN-m32-quant-full-int_flatbuffer.h" // Input error
-
-// #include "tensorflow/lite/micro/examples/meta/models/test_models/1311/DPCRN-m32-quant-float16_flatbuffer.h" // Input error
-// #include "tensorflow/lite/micro/examples/meta/models/test_models/1311/DPCRN-m32-quant-full-int_flatbuffer.h" // Input error
-// #include "tensorflow/lite/micro/examples/meta/models/test_models/1311/DPCRN-m32_flatbuffer.h" // Too big
-// #include "tensorflow/lite/micro/examples/meta/models/test_models/1311/DPCRN-m32-quant_flatbuffer.h" // 
-// #include "tensorflow/lite/micro/examples/meta/models/test_models/1311/DPCRN-m32-quant-full-int-float32interace_flatbuffer.h" // 
-
-//micro example
-#include "tensorflow/lite/micro/examples/meta/models/micro_ex/micro_speech_quantized_model_data.cc" // 
+#include "tensorflow/lite/micro/examples/meta/models/meta_float_model_data.h" // Meta example model
+#include "tensorflow/lite/micro/examples/meta/models/meta_int8_model_data.h"  // Meta example model
+#include "tensorflow/lite/micro/examples/meta/models/micro_ex/micro_speech_quantized_model_data.cc" // micro_speech_quantized_model_data example model
 
 #include "tensorflow/lite/micro/kernels/micro_ops.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
@@ -46,6 +32,15 @@ limitations under the License.
 #include "tensorflow/lite/micro/examples/meta/input749.h"
 #include "tensorflow/lite/micro/examples/meta/inputDPCRN.h"
 #include "tensorflow/lite/micro/examples/meta/output749.h"
+
+/*============================== MODELS =======================================*/
+// #include "tensorflow/lite/micro/examples/meta/models/test_models/1242/DPCRN-m32-quant-full-int-InOuts-float32_flatbuffer.h" // Input error
+// #include "tensorflow/lite/micro/examples/meta/models/test_models/1242/DPCRN-m32-quant-full-int_flatbuffer.h" // Input error
+// #include "tensorflow/lite/micro/examples/meta/models/test_models/1311/DPCRN-m32-quant-float16_flatbuffer.h" // Input error
+// #include "tensorflow/lite/micro/examples/meta/models/test_models/1311/DPCRN-m32-quant-full-int_flatbuffer.h" // Input error
+// #include "tensorflow/lite/micro/examples/meta/models/test_models/1311/DPCRN-m32_flatbuffer.h" // Too big
+// #include "tensorflow/lite/micro/examples/meta/models/test_models/1311/DPCRN-m32-quant_flatbuffer.h" // 
+// #include "tensorflow/lite/micro/examples/meta/models/test_models/1311/DPCRN-m32-quant-full-int-float32interace_flatbuffer.h" // 
 
 #define PROFILE
 #define PROF_ALLOCATE
