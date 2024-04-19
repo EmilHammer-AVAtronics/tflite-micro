@@ -1,0 +1,1 @@
+https://github.com/zeynepgulhanuslu/SKIP-DPCRN-Base-Tflite-And-Onnx/blob/main/pretrained_weights/DPCRN_base/dpcrn.tflite
