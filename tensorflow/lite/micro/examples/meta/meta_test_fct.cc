@@ -22,7 +22,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/examples/meta/models/meta_int8_model_data.h"
 
 //Without POW
-#include "tensorflow/lite/micro/examples/meta/models/test_models/1242/DPCRN-m32-quant-full-int-InOuts-float32_flatbuffer.h" // Input error
+// #include "tensorflow/lite/micro/examples/meta/models/test_models/1242/DPCRN-m32-quant-full-int-InOuts-float32_flatbuffer.h" // Input error
 // #include "tensorflow/lite/micro/examples/meta/models/test_models/1242/DPCRN-m32-quant-full-int_flatbuffer.h" // Input error
 
 // #include "tensorflow/lite/micro/examples/meta/models/test_models/1311/DPCRN-m32-quant-float16_flatbuffer.h" // Input error
@@ -95,18 +95,18 @@ static tflite::MicroInterpreter* test_global_interpreter_ptr = nullptr;
 static tflite::MicroInterpreter* global_interpreter = nullptr;
 
 tflite::MicroInterpreter* interpreter = nullptr;
-// constexpr int kTensorArenaSize = 40 * 1024;
+constexpr int kTensorArenaSize = 40 * 1024;
 // constexpr int kTensorArenaSize = 61376;
-constexpr int kTensorArenaSize = 421376;
+// constexpr int kTensorArenaSize = 421376;
 alignas(16) static uint8_t tensor_arena[kTensorArenaSize];
 
-// const tflite::Model* model = ::tflite::GetModel(g_meta_float_model_data); // <-- Original
+const tflite::Model* model = ::tflite::GetModel(g_meta_float_model_data); // <-- Original
 // const tflite::Model* model = ::tflite::GetModel(DPCRN_m32_quant_tflite);
 // const tflite::Model* model = ::tflite::GetModel(DPCRN_m32_quant_full_int_tflite);
 // const tflite::Model* model = ::tflite::GetModel(DPCRN_m32_quant_float16_tflite);
 // const tflite::Model* model = ::tflite::GetModel(DPCRN_m32_quant_full_int_float32interace_tflite);
 // const tflite::Model* model = ::tflite::GetModel(__DPCRN_m32_quant_full_int_InOuts_float32_tflite);
-const tflite::Model* model = ::tflite::GetModel(DPCRN_m32_quant_full_int_InOuts_float32_tflite);
+// const tflite::Model* model = ::tflite::GetModel(DPCRN_m32_quant_full_int_InOuts_float32_tflite);
 // const tflite::Model* model = ::tflite::GetModel(__DPCRN_m21_tflite);
 // const tflite::Model* model = ::tflite::GetModel(g_micro_speech_quantized_model_data);
 // const tflite::Model* model = ::tflite::GetModel(DPCRN_m32_quant_full_int_tflite);
@@ -175,19 +175,26 @@ TfLiteStatus LoadFloatModelAndPerformInferenceDPCRN(uint8_t* y_pred0_out1, uint8
 
   MicroPrintf("Bytes required: %u", interpreter.arena_used_bytes());
 
-  constexpr int input1 = TVX_DPCRN1*TVY_DPCRN1;
-  constexpr int input2 = TVX_DPCRN2*TVY_DPCRN2;
+  constexpr int input = TVX*TVY;
+  // constexpr int input1 = TVX_DPCRN1*TVY_DPCRN1;
+  // constexpr int input2 = TVX_DPCRN2*TVY_DPCRN2;
 
   MicroPrintf("Start: interpreter.input(0)->data.f[i]");
   // Fetch values from qCorr_24sum and give it as input
 
-  for (int i = 0; i < input1; ++i) {
-    interpreter.input(0)->data.f[i] = dpcrn_input_array1[i];
+
+
+  for (int i = 0; i < input; ++i) {
+    interpreter.input(0)->data.f[i] = qCorr_24sum[i];
   }
 
-    for (int i = 0; i < input2; ++i) {
-    interpreter.input(1)->data.f[i] = dpcrn_input_array2[i];
-  }
+  // for (int i = 0; i < input1; ++i) {
+  //   interpreter.input(0)->data.f[i] = dpcrn_input_array1[i];
+  // }
+
+  //   for (int i = 0; i < input2; ++i) {
+  //   interpreter.input(1)->data.f[i] = dpcrn_input_array2[i];
+  // }
 
   MicroPrintf("Start: interpreter.Invoke()");
   TF_LITE_ENSURE_STATUS(interpreter.Invoke());
