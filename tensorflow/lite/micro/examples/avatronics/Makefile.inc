@@ -1,6 +1,6 @@
 AVATRONICS_TEST_SRCS := \
 $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/avatronics_test.cc \
-$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/Airoha_DPCRN_m34_quant_full_int.cc 
+$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/Airoha_DPCRN_m34_quant_full_int.cc
 
 AVATRONICS_SRCS := \
 $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/avatronics_test.cc \
@@ -10,15 +10,15 @@ AVATRONICS_HDRS :=
 
 AVATRONICS_GENERATOR_INPUTS := \
 $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int.tflite \
-$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/meta/models/meta_float.tflite
+$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34.tflite
 
 AVATRONICS_GENERATED_SRCS := \
 $(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int.cc \
-$(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/meta/models/meta_float_model_data.cc
+$(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34.cc
 
 AVATRONICS_GENERATED_HDRS := \
 $(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int.h \
-$(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/meta/models/meta_float_model_data.h
+$(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34.h
 
 # Tests loading and running the sine model.
 $(eval $(call microlite_test,avatronics_test,\

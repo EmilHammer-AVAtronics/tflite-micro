@@ -30,15 +30,17 @@ limitations under the License.
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/micro/examples/meta/input749.h"
 
+// #define CYCLES_TAKEN
+
 #define PROFILE
 #define PROF_ALLOCATE
-#include "xt_profiler.h"
+#include "third_party/avatronics/xt_profiler.h"
 
 namespace {
 tflite::MicroInterpreter* global_interpreter = nullptr;
 constexpr int kTensorArenaSize = 4000;
 alignas(16) static uint8_t tensor_arena[kTensorArenaSize];
-const tflite::Model* model = ::tflite::GetModel(g_meta_float_model_data); // <-- Original
+const tflite::Model* model = ::tflite::GetModel(g_meta_float_model_data);
 }
 
 int meta_setup() {
@@ -65,16 +67,39 @@ int meta_setup() {
 }
 
 int meta_inference(uint8_t* y_pred0_out1, uint8_t* y_pred1_out1) {
+#ifdef CYCLES_TAKEN
+  char profiler_name[MAX_PROFILER_NAME_LENGTH];
+  char profiler_params[MAX_PROFILER_PARAMS_LENGTH];
+  int num_ops=0;
+#endif
+
   constexpr int kNumTestValues = TVX*TVY;
   for (int i = 0; i < kNumTestValues; ++i) {
     global_interpreter->input(0)->data.f[i] = qCorr_24sum[i];
   }
   if (kTfLiteOk != global_interpreter->Invoke()) return 1;
 
+#ifdef CYCLES_TAKEN
+  XTPWR_PROFILER_OPEN(0, profiler_name, profiler_params, num_ops, "OPs/cyc", 1);
+  XTPWR_PROFILER_UPDATE(0);
+  XTPWR_PROFILER_START(0);
+#endif
+
+  if (kTfLiteOk != global_interpreter->Invoke()) return 1;
+
+#ifdef CYCLES_TAKEN
+  XTPWR_PROFILER_STOP(0);
+  XTPWR_PROFILER_UPDATE(0);
+  XTPWR_PROFILER_PRINT(0);
+#endif
+
+  // Process the inference results.
   *y_pred0_out1 = uint8_t(global_interpreter->output(0)->data.f[0]);
   *y_pred1_out1 = uint8_t(global_interpreter->output(0)->data.f[1]);
-  return 0;
+
+  return;
 } 
+
 
 int wrapper_meta_setup(){
   int ret = meta_setup();
@@ -108,5 +133,6 @@ int cpp_meta_test_fct() {
     MicroPrintf("*y_pred0_out1 != 18, y_pred0_out1: %d\n", *y_pred0_out1);
     MicroPrintf("*y_pred1_out1 != 81, y_pred0_out1: %d\n", *y_pred1_out1);
   }
+
   return 0;
 }

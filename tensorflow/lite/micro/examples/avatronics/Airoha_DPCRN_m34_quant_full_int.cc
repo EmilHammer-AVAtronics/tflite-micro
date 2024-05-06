@@ -36,20 +36,28 @@ const char* model_name = "g_DPCRN_m34_quant_full_int_model_data";
 
 /*============ DPCRN-m34 COMMIT: April 30th, 2024 10:30 AM ======================*/
 #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int_model_data.h"
-#include "tensorflow/lite/micro/examples/meta/models/meta_float_model_data.h"
- 
+#include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_model_data.h"
+
+/*Enables time measurement - BUILD_TYPE should be 'release' for this to work */ 
+#define CYCLES_TAKEN
+
+/* For measuring time*/
+#define PROFILE
+#define PROF_ALLOCATE
+#include "third_party/avatronics/xt_profiler.h"
 
 namespace {
 tflite::MicroInterpreter* global_interpreter = nullptr;
-constexpr int kTensorArenaSize = 80000;
+// constexpr int kTensorArenaSize = 80000;
+constexpr int kTensorArenaSize = 100000;
 alignas(16) static uint8_t tensor_arena[kTensorArenaSize];
-const tflite::Model* model = ::tflite::GetModel(g_DPCRN_m34_quant_full_int_model_data);
+const tflite::Model* model = ::tflite::GetModel(g_DPCRN_m34_model_data);
 }
 
 int nn_setup() {
   tflite::InitializeTarget();
 
-  model = ::tflite::GetModel(g_DPCRN_m34_quant_full_int_model_data);
+  model = ::tflite::GetModel(g_DPCRN_m34_model_data);
   TFLITE_CHECK_EQ(model->version(), TFLITE_SCHEMA_VERSION); 
 
   static tflite::MicroMutableOpResolver<17> micro_op_resolver;
@@ -85,13 +93,32 @@ int nn_setup() {
 int nn_inference(int8_t* numElementsInputTensors, int32_t** inputTensors, const int32_t* inputTensorValues,
                   int8_t* numElementsOutputTensors, int32_t** outputTensors, const int32_t* outputTensorValues) {                  
 
+#ifdef CYCLES_TAKEN
+  char profiler_name[MAX_PROFILER_NAME_LENGTH];
+  char profiler_params[MAX_PROFILER_PARAMS_LENGTH];
+  int num_ops=0;
+#endif
+
+
   for (int i = 0; i < *numElementsInputTensors; ++i) {
     for (int j = 0; j < inputTensorValues[i]; ++j) {
       global_interpreter->input(i)->data.int8[j] = inputTensors[i][j];
     }
   }
 
+#ifdef CYCLES_TAKEN
+  XTPWR_PROFILER_OPEN(0, profiler_name, profiler_params, num_ops, "OPs/cyc", 1);
+  XTPWR_PROFILER_UPDATE(0);
+  XTPWR_PROFILER_START(0);
+#endif
+
 if (kTfLiteOk != global_interpreter->Invoke()) return 1;
+
+#ifdef CYCLES_TAKEN
+  XTPWR_PROFILER_STOP(0);
+  XTPWR_PROFILER_UPDATE(0);
+  XTPWR_PROFILER_PRINT(0);
+#endif
 
 for (int i = 0; i < *numElementsOutputTensors; i++ ) {
   for (int j = 0; j < outputTensorValues[i]; j++ ) {
