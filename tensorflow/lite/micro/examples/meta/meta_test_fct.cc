@@ -49,7 +49,7 @@ limitations under the License.
 
 // Namespace
 namespace {
-using MetaOpResolver = tflite::MicroMutableOpResolver<29>; // 25
+using MetaOpResolver = tflite::MicroMutableOpResolver<29>;
 
 TfLiteStatus RegisterOps(MetaOpResolver& op_resolver) {
   TF_LITE_ENSURE_STATUS(op_resolver.AddMul());
@@ -63,7 +63,7 @@ TfLiteStatus RegisterOps(MetaOpResolver& op_resolver) {
   TF_LITE_ENSURE_STATUS(op_resolver.AddTanh());
   TF_LITE_ENSURE_STATUS(op_resolver.AddSub());
   TF_LITE_ENSURE_STATUS(op_resolver.AddPack());
-  TF_LITE_ENSURE_STATUS(op_resolver.AddMean()); 
+  TF_LITE_ENSURE_STATUS(op_resolver.AddMean());
   TF_LITE_ENSURE_STATUS(op_resolver.AddSquaredDifference());  
   TF_LITE_ENSURE_STATUS(op_resolver.AddRsqrt());
   TF_LITE_ENSURE_STATUS(op_resolver.AddStridedSlice());
