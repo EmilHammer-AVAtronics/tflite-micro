@@ -30,11 +30,15 @@ limitations under the License.
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/micro/examples/meta/input749.h"
 
+/*Enables time measurement - BUILD_TYPE should be 'release' for this to work */ 
 // #define CYCLES_TAKEN
 
+#ifdef CYCLES_TAKEN
 #define PROFILE
 #define PROF_ALLOCATE
 #include "third_party/avatronics/xt_profiler.h"
+#endif
+
 
 namespace {
 tflite::MicroInterpreter* global_interpreter = nullptr;

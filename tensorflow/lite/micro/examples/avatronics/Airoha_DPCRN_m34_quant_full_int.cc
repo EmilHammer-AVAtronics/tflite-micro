@@ -41,10 +41,11 @@ const char* model_name = "g_DPCRN_m34_quant_full_int_model_data";
 /*Enables time measurement - BUILD_TYPE should be 'release' for this to work */ 
 // #define CYCLES_TAKEN
 
-/* For measuring time*/
+#ifdef CYCLES_TAKEN
 #define PROFILE
 #define PROF_ALLOCATE
 #include "third_party/avatronics/xt_profiler.h"
+#endif
 
 namespace {
 tflite::MicroInterpreter* global_interpreter = nullptr;
@@ -202,7 +203,7 @@ int avatronics_test() {
   /* Prints the predections*/
   MicroPrintf("\nOutput values: (%d)",numOfOutputs);
   for (int i = 0; i < numOfOutputs; i++) {
-    MicroPrintf("\n\tOutputTensor_%d: (%d) \n\t\t[", i, outputTensorShapes[i]); 
+    MicroPrintf("\n\tOutputTensor_%d: (%d) \n\t\t[", i, outputTensorShapes[i]);
     for (int j = 0; j < outputTensorShapes[i]; j++) {
       if (j % 14 == 0 && j != 0) { 
         MicroPrintf("\n\t\t "); 
