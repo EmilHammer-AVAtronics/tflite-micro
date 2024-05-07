@@ -97,9 +97,8 @@ int meta_inference(uint8_t* y_pred0_out1, uint8_t* y_pred1_out1) {
   *y_pred0_out1 = uint8_t(global_interpreter->output(0)->data.f[0]);
   *y_pred1_out1 = uint8_t(global_interpreter->output(0)->data.f[1]);
 
-  return;
-} 
-
+  return 0;
+}
 
 int wrapper_meta_setup(){
   int ret = meta_setup();

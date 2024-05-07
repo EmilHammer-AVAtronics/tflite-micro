@@ -39,7 +39,7 @@ const char* model_name = "g_DPCRN_m34_quant_full_int_model_data";
 #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_model_data.h"
 
 /*Enables time measurement - BUILD_TYPE should be 'release' for this to work */ 
-#define CYCLES_TAKEN
+// #define CYCLES_TAKEN
 
 /* For measuring time*/
 #define PROFILE
@@ -48,16 +48,15 @@ const char* model_name = "g_DPCRN_m34_quant_full_int_model_data";
 
 namespace {
 tflite::MicroInterpreter* global_interpreter = nullptr;
-// constexpr int kTensorArenaSize = 80000;
-constexpr int kTensorArenaSize = 100000;
+constexpr int kTensorArenaSize = 80000;
 alignas(16) static uint8_t tensor_arena[kTensorArenaSize];
-const tflite::Model* model = ::tflite::GetModel(g_DPCRN_m34_model_data);
+const tflite::Model* model = ::tflite::GetModel(g_DPCRN_m34_quant_full_int_model_data);
 }
 
 int nn_setup() {
   tflite::InitializeTarget();
 
-  model = ::tflite::GetModel(g_DPCRN_m34_model_data);
+  model = ::tflite::GetModel(g_DPCRN_m34_quant_full_int_model_data);
   TFLITE_CHECK_EQ(model->version(), TFLITE_SCHEMA_VERSION); 
 
   static tflite::MicroMutableOpResolver<17> micro_op_resolver;
