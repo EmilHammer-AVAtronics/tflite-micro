@@ -16,6 +16,7 @@ extern "C" int wrapper_nn_setup();
  * @return Status code indicating the success or failure of the inference process.
  *         0 indicates success, while other values indicate errors.
  */ 
-extern "C" int wrapper_nn_inference(int8_t* numElementsInputTensors, int32_t** inputTensors, const int32_t* inputTensorValues,
-                                    int8_t* numElementsOutputTensors, int32_t** outputTensors, const int32_t* outputTensorValues);
- 
+
+extern "C" int wrapper_nn_inference_int32(int8_t* numElementsInputTensors, int32_t** inputTensors, const int32_t* inputTensorValues, int8_t* numElementsOutputTensors, int32_t** outputTensors, const int32_t* outputTensorValues);
+
+extern "C" int wrapper_nn_inference_double(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* inputTensorValues, int8_t* numElementsOutputTensors, int32_t** outputTensors, const int32_t* outputTensorValues);
