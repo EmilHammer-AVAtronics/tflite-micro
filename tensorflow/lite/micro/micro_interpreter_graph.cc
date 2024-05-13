@@ -24,6 +24,21 @@ limitations under the License.
 #include "tensorflow/lite/micro/micro_profiler.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
+#define CYCLES_TAKEN
+
+#ifdef CYCLES_TAKEN
+#define PROFILE
+#define PROF_ALLOCATE
+#include "third_party/avatronics/xt_profiler.h"
+#endif
+
+#ifdef CYCLES_TAKEN
+char profiler_name[MAX_PROFILER_NAME_LENGTH];
+char profiler_params[MAX_PROFILER_PARAMS_LENGTH];
+int num_ops=0;
+#endif
+
+
 namespace tflite {
 namespace {
 
@@ -175,6 +190,14 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
   }
   uint32_t operators_size = NumSubgraphOperators(model_, subgraph_idx);
   for (size_t i = 0; i < operators_size; ++i) {
+    MicroPrintf("OP Index: %d\n",i);
+
+#ifdef CYCLES_TAKEN
+    XTPWR_PROFILER_OPEN(0, profiler_name, profiler_params, num_ops, "OPs/cyc", 1);
+    XTPWR_PROFILER_UPDATE(0);
+    XTPWR_PROFILER_START(0);
+#endif
+
     TfLiteNode* node =
         &(subgraph_allocations_[subgraph_idx].node_and_registrations[i].node);
     const TFLMRegistration* registration = subgraph_allocations_[subgraph_idx]
@@ -206,8 +229,15 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
     } else if (invoke_status != kTfLiteOk) {
       return invoke_status;
     }
+#ifdef CYCLES_TAKEN
+    XTPWR_PROFILER_STOP(0);
+    XTPWR_PROFILER_UPDATE(0);
+    XTPWR_PROFILER_PRINT(0);
+#endif
   }
   current_subgraph_index_ = previous_subgraph_idx;
+
+
   return kTfLiteOk;
 }
 
