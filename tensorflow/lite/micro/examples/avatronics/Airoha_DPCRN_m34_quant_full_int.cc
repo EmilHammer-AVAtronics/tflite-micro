@@ -27,7 +27,7 @@ limitations under the License.
 #include "tensorflow/lite/kernels/internal/runtime_shape.h"
 
 #include "tensorflow/lite/micro/recording_micro_interpreter.h"
-#include "tensorflow/lite/micro/system_setup.h"
+#include "tensorflow/lite/micro/system_setup.h" 
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/micro/examples/meta/inputDPCRN.h"
 
@@ -36,13 +36,17 @@ const char* model_name = "g_DPCRN_m34_quant_full_int_model_data";
 
 /*============ DPCRN-m34 COMMIT: April 30th, 2024 10:30 AM ======================*/
 #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int_model_data.h"
-#include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_model_data.h"
+// #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_model_data.h"
+
+/*============ Included from GitHub folder ======================*/
+#include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m34_model_data.h"
+// #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m34_quant_full_int_model_data.h"
 
 /*Enables time measurement - BUILD_TYPE should be 'release' for this to work */ 
 // #define CYCLES_TAKEN
 
-#define MODEL_DATATYPE_DOUBLE /*Write in uppercases*/
-// #define MODEL_DATATYPE_INT32 /*Write in uppercases*/
+// #define MODEL_DATATYPE_DOUBLE /*Write in uppercases*/
+#define MODEL_DATATYPE_INT32 /*Write in uppercases*/
 
 #ifdef CYCLES_TAKEN
 #define PROFILE
@@ -62,7 +66,7 @@ int nn_setup() {
 
   /*  INT8    = g_DPCRN_m34_quant_full_int_model_data   */
   /*  Float32 = g_DPCRN_m34_model_data                  */
-  model = ::tflite::GetModel(g_DPCRN_m34_model_data);
+  model = ::tflite::GetModel(g_DPCRN_m34_quant_full_int_model_data);
   TFLITE_CHECK_EQ(model->version(), TFLITE_SCHEMA_VERSION); 
 
   static tflite::MicroMutableOpResolver<17> micro_op_resolver;
@@ -136,12 +140,12 @@ if (kTfLiteOk != global_interpreter->Invoke()) return 1;
   for (int i = 0; i < *numElementsOutputTensors; i++ ) {
     for (int j = 0; j < outputTensorValues[i]; j++ ) {
 #if defined(MODEL_DATATYPE_INT32)
-          outputTensors[i][j] = int8_t(global_interpreter->output(i)->data.int8[j]);
+      outputTensors[i][j] = int8_t(global_interpreter->output(i)->data.int8[j]);
 #elif defined(MODEL_DATATYPE_DOUBLE)
-          outputTensors[i][j] = double(global_interpreter->output(i)->data.f[j]);
+      outputTensors[i][j] = double(global_interpreter->output(i)->data.f[j]);
 #elif
-          MicroPrintf("Unrecognized data type !");
-          return 0;
+      MicroPrintf("Unrecognized data type !");
+      return 0;
 #endif
       }
     }

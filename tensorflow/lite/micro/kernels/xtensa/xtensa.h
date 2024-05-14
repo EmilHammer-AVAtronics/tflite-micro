@@ -26,8 +26,13 @@ limitations under the License.
 #include "include/nnlib/xa_nnlib_api.h"
 #include "include/nnlib/xa_nnlib_standards.h"
 
+#if defined(AVA)
+#include "algo/kernels/cnn/hifi5/xa_nn_conv2d_pointwise_f32.c"
+#else
 #define ALIGNED_SIZE(x, bytes) (((x) + (bytes - 1)) & (~(bytes - 1)))
 #define ALIGN_PTR(x, bytes) ((((unsigned)(x)) + (bytes - 1)) & (~(bytes - 1)))
+#endif  // AVA
+
 #endif  // defined(HIFI3) || defined(HIFI4) || defined(HIFI5)
 
 #if defined(VISION_P6)

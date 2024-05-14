@@ -33,6 +33,7 @@ namespace tflite {
 namespace {
 
 TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
+  MicroPrintf("\nIm running Eval in Xtensa ref Kernel !");
   TFLITE_DCHECK(node->user_data != nullptr);
   TFLITE_DCHECK(node->builtin_data != nullptr);
 
@@ -50,7 +51,7 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
   const TfLiteEvalTensor* bias =
       tflite::micro::GetEvalInput(context, node, kConvBiasTensor);
 
-  switch (input->type) {
+  switch (input->type) { // <-- This is running when the datatype is equal float32
     case kTfLiteFloat32: {
       tflite::reference_ops::Conv(
           ConvParamsFloat(params, op_data.reference_op_data),
@@ -64,6 +65,12 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
           tflite::micro::GetTensorData<float>(output),
           tflite::micro::GetTensorShape(nullptr), nullptr);
       break;
+// #if defined(HIFI3) || defined(HIFI4) || defined(HIFI5)
+//        return ConvEvalHifiFloat32(context, node, params, op_data, input, filter, /* AVA self made*/
+//                                   bias, output);
+//        return ConvEvalHifiInt16ToFloat32(context, node, params, op_data, input, filter, /* AVA self made*/
+//                           bias, output);
+// #endif
     }
     case kTfLiteInt8: {
 #if defined(HIFI3) || defined(HIFI4) || defined(HIFI5)
