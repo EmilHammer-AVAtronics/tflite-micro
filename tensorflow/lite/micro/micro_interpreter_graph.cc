@@ -24,7 +24,12 @@ limitations under the License.
 #include "tensorflow/lite/micro/micro_profiler.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
-#define CYCLES_TAKEN
+// #define CYCLES_TAKEN
+#define PRINT_INTERMEDIATE_TENSORS
+
+#ifdef PRINT_INTERMEDIATE_TENSORS
+#include "tensorflow/lite/micro/kernels/kernel_util.h"
+#endif
 
 #ifdef CYCLES_TAKEN
 #define PROFILE
@@ -229,6 +234,110 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
     } else if (invoke_status != kTfLiteOk) {
       return invoke_status;
     }
+
+#ifdef PRINT_INTERMEDIATE_TENSORS
+
+    int32_t output_size = node->outputs->size;
+    int* output_tensors = node->outputs->data;
+
+    int32_t input_size = node->inputs->size;
+    int* input_tensors = node->inputs->data;
+
+    MicroContext* micro_context = GetMicroContext(context_);
+
+    
+    MicroPrintf("\tNumber of inputs %d:\n", input_size);
+
+    for (int j = 0; j < input_size; j++) {
+        MicroPrintf("\tTensor %d -->\tInput(%d)\n", *(input_tensors + j), j);
+    }
+
+    for (int j = 0; j < input_size; j++) {
+        MicroPrintf("\n\t\tTensor %d:\n", *(input_tensors + j));
+        if (*(input_tensors + j) == -1) {
+            MicroPrintf("\t\t\t\tSKIPS WHEN OP -1 !!\n");
+        } else {
+            TfLiteTensor* input = micro_context->AllocateTempInputTensor(node, j);
+            TF_LITE_ENSURE(context_, input != nullptr);
+            RuntimeShape input_shape = GetTensorShape(input);
+
+            MicroPrintf("\t\t\tNumber of dimensions: %d\n", input_shape.DimensionsCount());
+            MicroPrintf("\t\t\tShape: [");
+            if (0 == input_shape.DimensionsCount()) MicroPrintf("]\n"); 
+
+            for (int k = 0; k < input_shape.DimensionsCount(); k++) {
+               if (k == (input_shape.DimensionsCount() - 1))  {
+                    MicroPrintf("%d]\n", input_shape.Dims(k));
+                } else {
+                    MicroPrintf("%d, ", input_shape.Dims(k));
+                }
+            }
+
+            for (int k = 0; k < input_shape.DimensionsCount(); k++) {
+                MicroPrintf("\n\t\t\tValues of dim %d, of size %d:\n\t\t\t\t[", k, input_shape.Dims(k));
+
+                for (int l = 0; l < input_shape.Dims(k); l++) {
+                    if (l % 18 == 0 && l != 0) {
+                        MicroPrintf("\n\t\t\t\t ");
+                    }
+                    if (l == (input_shape.Dims(k) - 1)) {
+                        MicroPrintf("%d]\n", input->data.int8[l]);
+                    } else {
+                        MicroPrintf("%d, ", input->data.int8[l]);
+                    }
+                }
+            }
+            micro_context->DeallocateTempTfLiteTensor(input);
+        }
+    }
+
+  /* OUTPUT */
+
+    MicroPrintf("\tNumber of outputs %d:\n", output_size);
+    for (int j = 0; j < output_size; j++) {
+        MicroPrintf("\tOutput(%d) -->\tTensor %d\n", j, *(output_tensors + j));
+    }
+
+    for (int j = 0; j < output_size; j++) {
+        MicroPrintf("\n\t\tTensor %d:\n", *(output_tensors + j));
+        if (*(output_tensors + j) == -1) {
+            MicroPrintf("\t\t\t\tSKIPS WHEN OP -1 !!\n");
+        } else {
+            TfLiteTensor* output = micro_context->AllocateTempOutputTensor(node, j);
+            TF_LITE_ENSURE(context_, output != nullptr);
+            RuntimeShape output_shape = GetTensorShape(output);
+
+            MicroPrintf("\t\t\tNumber of dimensions: %d\n", output_shape.DimensionsCount());
+            MicroPrintf("\t\t\tShape:\t[");
+            if (0 == output_shape.DimensionsCount()) MicroPrintf("]\n"); 
+
+            for (int k = 0; k < output_shape.DimensionsCount(); k++) {
+                if (k == (output_shape.DimensionsCount() - 1)) {
+                    MicroPrintf("%d]\n", output_shape.Dims(k));
+                } else {
+                    MicroPrintf("%d, ", output_shape.Dims(k));
+                }
+            }
+
+            for (int k = 0; k < output_shape.DimensionsCount(); k++) {
+                MicroPrintf("\n\t\t\tValues of dim %d, of size %d:\n\t\t\t\t[", k, output_shape.Dims(k));
+
+                for (int l = 0; l < output_shape.Dims(k); l++) {
+                    if (l % 18 == 0 && l != 0) {
+                        MicroPrintf("\n\t\t\t\t ");
+                    }
+                    if (l == (output_shape.Dims(k) - 1)) {
+                        MicroPrintf("%d]\n", output->data.int8[l]);
+                    } else {
+                        MicroPrintf("%d, ", output->data.int8[l]);
+                    }
+                }
+            }
+            micro_context->DeallocateTempTfLiteTensor(output);
+        }
+    }
+#endif
+
 #ifdef CYCLES_TAKEN
     XTPWR_PROFILER_STOP(0);
     XTPWR_PROFILER_UPDATE(0);

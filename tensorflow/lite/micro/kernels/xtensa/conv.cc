@@ -33,7 +33,6 @@ namespace tflite {
 namespace {
 
 TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
-  MicroPrintf("\nIm running Eval in Xtensa ref Kernel !");
   TFLITE_DCHECK(node->user_data != nullptr);
   TFLITE_DCHECK(node->builtin_data != nullptr);
 

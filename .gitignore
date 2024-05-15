@@ -13,4 +13,4 @@ gen
 
 # Ignore the `external` symlink added by `bazel-compile-commands-extractor`
 /external
-/output_log.txt
+/*.txt

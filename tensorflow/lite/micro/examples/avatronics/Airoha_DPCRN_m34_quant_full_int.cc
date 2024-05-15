@@ -35,12 +35,12 @@ limitations under the License.
 const char* model_name = "g_DPCRN_m34_quant_full_int_model_data";  
 
 /*============ DPCRN-m34 COMMIT: April 30th, 2024 10:30 AM ======================*/
-#include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int_model_data.h"
+// #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int_model_data.h"
 // #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_model_data.h"
 
 /*============ Included from GitHub folder ======================*/
 #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m34_model_data.h"
-// #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m34_quant_full_int_model_data.h"
+#include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m34_quant_full_int_model_data.h"
 
 /*Enables time measurement - BUILD_TYPE should be 'release' for this to work */ 
 // #define CYCLES_TAKEN
@@ -190,11 +190,11 @@ int avatronics_test() {
   constexpr int32_t inputTensorShapes[] = {(1*1*8*32), (1*1*257*3)};
 
 #if defined(MODEL_DATATYPE_INT32)
-  MicroPrintf("\n\nMODEL_DATATYPE == INT32\n");
+  MicroPrintf("\n\nMODEL_DATATYPE == INT32\n\n");
 #elif defined(MODEL_DATATYPE_DOUBLE)
-  MicroPrintf("\n\n MODEL_DATATYPE == DOUBLE\n");
+  MicroPrintf("\n\n MODEL_DATATYPE == DOUBLE\n\n");
 #else
-  MicroPrintf("\n\n MODEL_DATATYPE UNKNOWN\n");
+  MicroPrintf("\n\n MODEL_DATATYPE UNKNOWN\n\n");
 #endif
 
 
