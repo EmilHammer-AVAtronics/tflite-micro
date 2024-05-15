@@ -24,24 +24,31 @@ limitations under the License.
 #include "tensorflow/lite/micro/micro_profiler.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
-// #define CYCLES_TAKEN
-#define PRINT_INTERMEDIATE_TENSORS
+#include "tensorflow/lite/micro/examples/avatronics/config.h"
 
 #ifdef PRINT_INTERMEDIATE_TENSORS
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
 #endif
 
-#ifdef CYCLES_TAKEN
+#if MEASURE_CYCLES_TAKEN == 1
+#define MEASURE_CYCLES 1
+#else 
+#define MEASURE_CYCLES 0
+#endif // MEASURE_CYCLES_TAKEN
+
+
+#if MEASURE_CYCLES
 #define PROFILE
 #define PROF_ALLOCATE
 #include "third_party/avatronics/xt_profiler.h"
-#endif
+#endif // MEASURE_CYCLES
 
-#ifdef CYCLES_TAKEN
+
+#if MEASURE_CYCLES
 char profiler_name[MAX_PROFILER_NAME_LENGTH];
 char profiler_params[MAX_PROFILER_PARAMS_LENGTH];
 int num_ops=0;
-#endif
+#endif // MEASURE_CYCLES
 
 
 namespace tflite {
@@ -197,11 +204,11 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
   for (size_t i = 0; i < operators_size; ++i) {
     MicroPrintf("OP Index: %d\n",i);
 
-#ifdef CYCLES_TAKEN
+#if MEASURE_CYCLES
     XTPWR_PROFILER_OPEN(0, profiler_name, profiler_params, num_ops, "OPs/cyc", 1);
     XTPWR_PROFILER_UPDATE(0);
     XTPWR_PROFILER_START(0);
-#endif
+#endif //MEASURE_CYCLES
 
     TfLiteNode* node =
         &(subgraph_allocations_[subgraph_idx].node_and_registrations[i].node);
@@ -235,15 +242,19 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
       return invoke_status;
     }
 
-#ifdef PRINT_INTERMEDIATE_TENSORS
+#if PRINT_INTERMEDIATE_TENSORS
 
     int32_t output_size = node->outputs->size;
-    int* output_tensors = node->outputs->data;
-
     int32_t input_size = node->inputs->size;
+#if MODEL_DATATYPE_INT32
+    int* output_tensors = node->outputs->data;
     int* input_tensors = node->inputs->data;
+#elif MODEL_DATATYPE_DOUBLE
+    int* output_tensors = node->outputs->data;
+    int* input_tensors = node->inputs->data;
+#endif
 
-    MicroContext* micro_context = GetMicroContext(context_);
+    MicroContext* micro_context = GetMicroContext(context_);  
 
     
     MicroPrintf("\tNumber of inputs %d:\n", input_size);
@@ -277,13 +288,21 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
                 MicroPrintf("\n\t\t\tValues of dim %d, of size %d:\n\t\t\t\t[", k, input_shape.Dims(k));
 
                 for (int l = 0; l < input_shape.Dims(k); l++) {
-                    if (l % 18 == 0 && l != 0) {
+                    if (l % 14 == 0 && l != 0) {
                         MicroPrintf("\n\t\t\t\t ");
                     }
                     if (l == (input_shape.Dims(k) - 1)) {
+#if MODEL_DATATYPE_INT32
                         MicroPrintf("%d]\n", input->data.int8[l]);
+#elif MODEL_DATATYPE_DOUBLE
+                        MicroPrintf("%f]\n", double(input->data.f[l]));
+#endif
                     } else {
+#if MODEL_DATATYPE_INT32
                         MicroPrintf("%d, ", input->data.int8[l]);
+#elif MODEL_DATATYPE_DOUBLE
+                        MicroPrintf("%f, ", double(input->data.f[l]));
+#endif
                     }
                 }
             }
@@ -323,26 +342,34 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
                 MicroPrintf("\n\t\t\tValues of dim %d, of size %d:\n\t\t\t\t[", k, output_shape.Dims(k));
 
                 for (int l = 0; l < output_shape.Dims(k); l++) {
-                    if (l % 18 == 0 && l != 0) {
+                    if (l % 14 == 0 && l != 0) {
                         MicroPrintf("\n\t\t\t\t ");
                     }
                     if (l == (output_shape.Dims(k) - 1)) {
+#if MODEL_DATATYPE_INT32
                         MicroPrintf("%d]\n", output->data.int8[l]);
+#elif MODEL_DATATYPE_DOUBLE
+                        MicroPrintf("%f]\n", double(output->data.f[l]));
+#endif
                     } else {
+#if MODEL_DATATYPE_INT32
                         MicroPrintf("%d, ", output->data.int8[l]);
+#elif MODEL_DATATYPE_DOUBLE
+                        MicroPrintf("%f, ", double(output->data.f[l]));
+#endif
                     }
                 }
             }
             micro_context->DeallocateTempTfLiteTensor(output);
         }
     }
-#endif
+#endif // PRINT_INTERMEDIATE_TENSORS
 
-#ifdef CYCLES_TAKEN
+#if MEASURE_CYCLES
     XTPWR_PROFILER_STOP(0);
     XTPWR_PROFILER_UPDATE(0);
     XTPWR_PROFILER_PRINT(0);
-#endif
+#endif // MEASURE_CYCLES
   }
   current_subgraph_index_ = previous_subgraph_idx;
 

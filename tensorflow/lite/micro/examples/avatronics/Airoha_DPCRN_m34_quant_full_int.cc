@@ -31,34 +31,45 @@ limitations under the License.
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/micro/examples/meta/inputDPCRN.h"
 
+/*============================== CONFIG =======================================*/
+#include "tensorflow/lite/micro/examples/avatronics/config.h"
+
 /*============================== MODELS =======================================*/
 const char* model_name = "g_DPCRN_m34_quant_full_int_model_data";  
 
-/*============ DPCRN-m34 COMMIT: April 30th, 2024 10:30 AM ======================*/
+/*========== LOCAL DPCRN-m34 COMMIT: April 30th, 2024 10:30 AM =================*/
 // #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int_model_data.h"
 // #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_model_data.h"
 
-/*============ Included from GitHub folder ======================*/
+/*======================== Included from GitHub folder ==========================*/
 #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m34_model_data.h"
 #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m34_quant_full_int_model_data.h"
 
-/*Enables time measurement - BUILD_TYPE should be 'release' for this to work */ 
-// #define CYCLES_TAKEN
 
-// #define MODEL_DATATYPE_DOUBLE /*Write in uppercases*/
-#define MODEL_DATATYPE_INT32 /*Write in uppercases*/
+#if MEASURE_CYCLES_TAKEN == 2
+#define MEASURE_CYCLES 1
+#else 
+#define MEASURE_CYCLES 0
+#endif //MEASURE_CYCLES_TAKEN
 
-#ifdef CYCLES_TAKEN
+#if MEASURE_CYCLES
 #define PROFILE
 #define PROF_ALLOCATE
 #include "third_party/avatronics/xt_profiler.h"
-#endif
+#endif //MEASURE_CYCLES
+
+#if MEASURE_CYCLES
+#define PROFILE
+#define PROF_ALLOCATE
+#include "third_party/avatronics/xt_profiler.h"
+#endif //MEASURE_CYCLES
+
 
 namespace {
   tflite::MicroInterpreter* global_interpreter = nullptr;
   constexpr int kTensorArenaSize = 100000;
   alignas(16) static uint8_t tensor_arena[kTensorArenaSize];
-  const tflite::Model* model = nullptr;
+  const tflite::Model* model = nullptr; 
 }
 
 int nn_setup() {
@@ -103,18 +114,18 @@ template <typename T>
 int nn_inference(int8_t* numElementsInputTensors, T** inputTensors, const int32_t* inputTensorValues,
                   int8_t* numElementsOutputTensors, T** outputTensors, const int32_t* outputTensorValues) {                  
 
-#ifdef CYCLES_TAKEN
+#if MEASURE_CYCLES
   char profiler_name[MAX_PROFILER_NAME_LENGTH];
   char profiler_params[MAX_PROFILER_PARAMS_LENGTH];
   int num_ops=0;
-#endif
+#endif // MEASURE_CYCLES
 
 
   for (int i = 0; i < *numElementsInputTensors; ++i) {
     for (int j = 0; j < inputTensorValues[i]; ++j) {
-#if defined(MODEL_DATATYPE_INT32)
+#if MODEL_DATATYPE_INT32
         global_interpreter->input(i)->data.int8[j] = inputTensors[i][j];
-#elif defined(MODEL_DATATYPE_DOUBLE)
+#elif MODEL_DATATYPE_DOUBLE
         global_interpreter->input(i)->data.f[j] = inputTensors[i][j];
 #elif
         MicroPrintf("Unrecognized data type !");
@@ -123,25 +134,25 @@ int nn_inference(int8_t* numElementsInputTensors, T** inputTensors, const int32_
     }
   }
 
-#ifdef CYCLES_TAKEN
+#if MEASURE_CYCLES
   XTPWR_PROFILER_OPEN(0, profiler_name, profiler_params, num_ops, "OPs/cyc", 1);
   XTPWR_PROFILER_UPDATE(0);
   XTPWR_PROFILER_START(0);
-#endif
+#endif // MEASURE_CYCLES
 
 if (kTfLiteOk != global_interpreter->Invoke()) return 1;
 
-#ifdef CYCLES_TAKEN
+#if MEASURE_CYCLES
   XTPWR_PROFILER_STOP(0);
   XTPWR_PROFILER_UPDATE(0);
   XTPWR_PROFILER_PRINT(0);
-#endif
+#endif // MEASURE_CYCLES
 
   for (int i = 0; i < *numElementsOutputTensors; i++ ) {
     for (int j = 0; j < outputTensorValues[i]; j++ ) {
-#if defined(MODEL_DATATYPE_INT32)
+#if MODEL_DATATYPE_INT32
       outputTensors[i][j] = int8_t(global_interpreter->output(i)->data.int8[j]);
-#elif defined(MODEL_DATATYPE_DOUBLE)
+#elif MODEL_DATATYPE_DOUBLE
       outputTensors[i][j] = double(global_interpreter->output(i)->data.f[j]);
 #elif
       MicroPrintf("Unrecognized data type !");
@@ -189,26 +200,26 @@ int avatronics_test() {
   int ret = 0;
   constexpr int32_t inputTensorShapes[] = {(1*1*8*32), (1*1*257*3)};
 
-#if defined(MODEL_DATATYPE_INT32)
+#if MODEL_DATATYPE_INT32
   MicroPrintf("\n\nMODEL_DATATYPE == INT32\n\n");
-#elif defined(MODEL_DATATYPE_DOUBLE)
+#elif MODEL_DATATYPE_DOUBLE
   MicroPrintf("\n\n MODEL_DATATYPE == DOUBLE\n\n");
 #else
   MicroPrintf("\n\n MODEL_DATATYPE UNKNOWN\n\n");
 #endif
 
 
-#if defined(MODEL_DATATYPE_INT32)
+#if MODEL_DATATYPE_INT32
   int32_t inputTensor_0[inputTensorShapes[0]];
   int32_t inputTensor_1[inputTensorShapes[1]];
-#elif defined(MODEL_DATATYPE_DOUBLE)
+#elif MODEL_DATATYPE_DOUBLE
   double inputTensor_0[inputTensorShapes[0]];
   double inputTensor_1[inputTensorShapes[1]];
 #endif
 
-#if defined(MODEL_DATATYPE_INT32)
+#if MODEL_DATATYPE_INT32
   int32_t* inputTensors[] = {inputTensor_0, inputTensor_1};
-#elif defined(MODEL_DATATYPE_DOUBLE)
+#elif MODEL_DATATYPE_DOUBLE
   double* inputTensors[] = {inputTensor_0, inputTensor_1};
 #endif
 
@@ -225,22 +236,22 @@ int avatronics_test() {
   constexpr int32_t outputTensorShapes[] = {(1*1*257) , (1*1*257),
                                             (1*1*8*32), (1*1*257)};
 
-#if defined(MODEL_DATATYPE_INT32)
+#if MODEL_DATATYPE_INT32
   int32_t outputTensor_0[outputTensorShapes[0]];
   int32_t outputTensor_1[outputTensorShapes[1]];
   int32_t outputTensor_2[outputTensorShapes[2]];
   int32_t outputTensor_3[outputTensorShapes[3]];
-#elif defined(MODEL_DATATYPE_DOUBLE)
+#elif MODEL_DATATYPE_DOUBLE
   double outputTensor_0[outputTensorShapes[0]];
   double outputTensor_1[outputTensorShapes[1]];
   double outputTensor_2[outputTensorShapes[2]];
   double outputTensor_3[outputTensorShapes[3]];
 #endif
   
-#if defined(MODEL_DATATYPE_INT32)
+#if MODEL_DATATYPE_INT32
   int32_t *outputTensors[] = {outputTensor_0, outputTensor_1,
                               outputTensor_2, outputTensor_3};
-#elif defined(MODEL_DATATYPE_DOUBLE)
+#elif MODEL_DATATYPE_DOUBLE
   double *outputTensors[] = {outputTensor_0, outputTensor_1,
                               outputTensor_2, outputTensor_3};
 #endif
@@ -267,12 +278,12 @@ int avatronics_test() {
       if (j % 28 == 0 && j!=0){
         MicroPrintf("\n\t\t"); 
       }
-#if defined(MODEL_DATATYPE_INT32)
+#if MODEL_DATATYPE_INT32
       MicroPrintf("%d,", inputTensors[i][j]);
-#elif defined(MODEL_DATATYPE_DOUBLE)
+#elif MODEL_DATATYPE_DOUBLE
       MicroPrintf("%f,", inputTensors[i][j]);
 #endif
-    }
+    } 
   MicroPrintf("]\n\n");
   }
 
@@ -284,9 +295,9 @@ int avatronics_test() {
       if (j % 14 == 0 && j != 0) { 
         MicroPrintf("\n\t\t "); 
       }
-#if defined(MODEL_DATATYPE_INT32)
+#if MODEL_DATATYPE_INT32
       MicroPrintf("%d, ", outputTensors[i][j]);
-#elif defined(MODEL_DATATYPE_DOUBLE)
+#elif MODEL_DATATYPE_DOUBLE
       MicroPrintf("%f, ", outputTensors[i][j]);
 #endif
     }
