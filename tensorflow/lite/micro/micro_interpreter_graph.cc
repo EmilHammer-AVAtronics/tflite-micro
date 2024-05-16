@@ -242,6 +242,12 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
       return invoke_status;
     }
 
+#if MEASURE_CYCLES
+    XTPWR_PROFILER_STOP(0);
+    XTPWR_PROFILER_UPDATE(0);
+    XTPWR_PROFILER_PRINT(0);
+#endif // MEASURE_CYCLES
+
 #if PRINT_INTERMEDIATE_TENSORS
 
     int32_t output_size = node->outputs->size;
@@ -365,11 +371,6 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
     }
 #endif // PRINT_INTERMEDIATE_TENSORS
 
-#if MEASURE_CYCLES
-    XTPWR_PROFILER_STOP(0);
-    XTPWR_PROFILER_UPDATE(0);
-    XTPWR_PROFILER_PRINT(0);
-#endif // MEASURE_CYCLES
   }
   current_subgraph_index_ = previous_subgraph_idx;
 
