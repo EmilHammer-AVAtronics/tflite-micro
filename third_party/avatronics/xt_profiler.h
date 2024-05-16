@@ -114,7 +114,7 @@ static unsigned long inline GETCLOCK(void)
 
 
 #define XTPWR_PROFILER_PRINT( prof )                                                               \
-  printf( " frame %d : %10.2f cycles; Total cycles : %10.2f cycles; %6.2f %s\n",                                         \
+  printf( "frame %d : %10.2f cycles; Total cycles : %10.2f cycles; %6.2f %s\n",                                         \
       (&gProfiler[prof])->frame_cnt-1, (&gProfiler[prof])->curr, (&gProfiler[prof])->sum, (&gProfiler[prof])->curr_metric, \
       (&gProfiler[prof])->metric_units); \
 
