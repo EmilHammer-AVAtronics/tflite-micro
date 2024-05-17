@@ -42,9 +42,6 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
   const auto& params =
       *(reinterpret_cast<TfLiteConvParams*>(node->builtin_data));
   const auto& op_data = *(reinterpret_cast<XtensaConvOpData*>(node->user_data));
-
-  MicroPrintf("\nactivation_function min: %d",op_data.reference_op_data.output_activation_min);
-  MicroPrintf("\nactivation_function max: %d",op_data.reference_op_data.output_activation_max);
   
 
   TfLiteEvalTensor* output =
