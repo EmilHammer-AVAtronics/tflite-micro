@@ -202,8 +202,9 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
   }
   uint32_t operators_size = NumSubgraphOperators(model_, subgraph_idx);
   for (size_t i = 0; i < operators_size; ++i) {
+#if PRINT_INTERMEDIATE_TENSORS
     MicroPrintf("OP Index: %d\n",i);
-
+#endif // PRINT_INTERMEDIATE_TENSORS
 #if MEASURE_CYCLES
     XTPWR_PROFILER_OPEN(0, profiler_name, profiler_params, num_ops, "OPs/cyc", 1);
     XTPWR_PROFILER_UPDATE(0);

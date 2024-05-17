@@ -203,14 +203,6 @@ int avatronics_test() {
   int ret = 0;
   constexpr int32_t inputTensorShapes[] = {(1*1*8*32), (1*1*257*3)};
 
-#if MODEL_DATATYPE_INT32
-  MicroPrintf("\n\nMODEL_DATATYPE == INT32\n\n");
-#elif MODEL_DATATYPE_DOUBLE
-  MicroPrintf("\n\n MODEL_DATATYPE == DOUBLE\n\n");
-#else
-  MicroPrintf("\n\n MODEL_DATATYPE UNKNOWN\n\n");
-#endif
-
 
 #if MODEL_DATATYPE_INT32
   int32_t inputTensor_0[inputTensorShapes[0]];
