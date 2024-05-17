@@ -451,8 +451,6 @@ TfLiteStatus ConvEvalHifiFloat32(TfLiteContext* context, TfLiteNode* node,
       }
       MicroPrintf("\n");
       MicroPrintf("\n\t p_out_temp: %f", static_cast<double>(*p_out_temp));
-      MicroPrintf("\n\t output_activation_min: %d", output_activation_min);
-      MicroPrintf("\n\t output_activation_max: %d", output_activation_max);
       MicroPrintf("\n\t out_length: %f", static_cast<double>(out_length));
       MicroPrintf("\n\t Callin activation function");
 
