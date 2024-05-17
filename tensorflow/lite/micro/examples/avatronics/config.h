@@ -13,12 +13,12 @@
 
 /*Print the values of the intermediate tensors in the model
  * Set to 1 to enable, 0 to disable. */
-#define PRINT_INTERMEDIATE_TENSORS 1
+#define PRINT_INTERMEDIATE_TENSORS 0
 
 /*Enables must match model datatype
  * Set to 1 to enable, 0 to disable.
  * OBS. ONLY ONE AT A TIME*/ 
-#define MODEL_DATATYPE_DOUBLE 0
-#define MODEL_DATATYPE_INT32 1
+#define MODEL_DATATYPE_DOUBLE 1
+#define MODEL_DATATYPE_INT32 0
 
 #endif /* CONFIG_H */

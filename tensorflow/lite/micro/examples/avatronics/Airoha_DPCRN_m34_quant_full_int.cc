@@ -44,6 +44,7 @@ const char* model_name = "g_DPCRN_m34_quant_full_int_model_data";
 /*======================== Included from GitHub folder ==========================*/
 #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m34_model_data.h"
 #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m34_quant_full_int_model_data.h"
+#include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m51_quant_full_int_InOuts_float32_model_data.h"
 
 
 #if MEASURE_CYCLES_TAKEN == 2
@@ -69,18 +70,19 @@ namespace {
   tflite::MicroInterpreter* global_interpreter = nullptr;
   constexpr int kTensorArenaSize = 100000;
   alignas(16) static uint8_t tensor_arena[kTensorArenaSize];
-  const tflite::Model* model = nullptr; 
-}
+  const tflite::Model* model = nullptr;
+} 
 
 int nn_setup() {
   tflite::InitializeTarget();
 
   /*  INT8    = g_DPCRN_m34_quant_full_int_model_data   */
   /*  Float32 = g_DPCRN_m34_model_data                  */
-  model = ::tflite::GetModel(g_DPCRN_m34_quant_full_int_model_data);
+  /*  FULL int / FLOAT32 interfaces = g_DPCRN_m34_model_data                  */
+  model = ::tflite::GetModel(g_DPCRN_m51_quant_full_int_InOuts_float32_model_data);
   TFLITE_CHECK_EQ(model->version(), TFLITE_SCHEMA_VERSION); 
 
-  static tflite::MicroMutableOpResolver<17> micro_op_resolver;
+  static tflite::MicroMutableOpResolver<19> micro_op_resolver;
   micro_op_resolver.AddStridedSlice();
   micro_op_resolver.AddMul();
   micro_op_resolver.AddAdd();
@@ -98,6 +100,9 @@ int nn_setup() {
   micro_op_resolver.AddRsqrt();
   micro_op_resolver.AddConcatenation();
   micro_op_resolver.AddTransposeConv();
+  // These are added for DPCRN_m51_quant_full_int_InOuts_float32
+  micro_op_resolver.AddQuantize();
+  micro_op_resolver.AddDequantize();
 
   static tflite::MicroInterpreter static_interpreter(model, micro_op_resolver, tensor_arena, kTensorArenaSize);
   global_interpreter = &static_interpreter;

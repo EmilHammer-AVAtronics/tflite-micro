@@ -43,6 +43,10 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
       *(reinterpret_cast<TfLiteConvParams*>(node->builtin_data));
   const auto& op_data = *(reinterpret_cast<XtensaConvOpData*>(node->user_data));
 
+  MicroPrintf("\nactivation_function min: %d",op_data.reference_op_data.output_activation_min);
+  MicroPrintf("\nactivation_function max: %d",op_data.reference_op_data.output_activation_max);
+  
+
   TfLiteEvalTensor* output =
       tflite::micro::GetEvalOutput(context, node, kConvOutputTensor);
   const TfLiteEvalTensor* filter =
@@ -50,26 +54,12 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
   const TfLiteEvalTensor* bias =
       tflite::micro::GetEvalInput(context, node, kConvBiasTensor);
 
-  switch (input->type) { // <-- This is running when the datatype is equal float32
+
+  switch (input->type) {
     case kTfLiteFloat32: {
-      tflite::reference_ops::Conv(
-          ConvParamsFloat(params, op_data.reference_op_data),
-          tflite::micro::GetTensorShape(input),
-          tflite::micro::GetTensorData<float>(input),
-          tflite::micro::GetTensorShape(filter),
-          tflite::micro::GetTensorData<float>(filter),
-          tflite::micro::GetTensorShape(bias),
-          tflite::micro::GetOptionalTensorData<float>(bias),
-          tflite::micro::GetTensorShape(output),
-          tflite::micro::GetTensorData<float>(output),
-          tflite::micro::GetTensorShape(nullptr), nullptr);
-      break;
-// #if defined(HIFI3) || defined(HIFI4) || defined(HIFI5)
-//        return ConvEvalHifiFloat32(context, node, params, op_data, input, filter, /* AVA self made*/
-//                                   bias, output);
-//        return ConvEvalHifiInt16ToFloat32(context, node, params, op_data, input, filter, /* AVA self made*/
-//                           bias, output);
-// #endif
+      MicroPrintf("\n Running: AVA self made conv2d kTfLiteFloat32\n");
+      return ConvEvalHifiFloat32(context, node, params, op_data, input, filter, /* AVA self made*/
+                                bias, output);
     }
     case kTfLiteInt8: {
 #if defined(HIFI3) || defined(HIFI4) || defined(HIFI5)
