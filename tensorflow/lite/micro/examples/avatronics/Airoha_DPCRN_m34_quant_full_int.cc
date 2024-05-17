@@ -42,8 +42,6 @@ const char* model_name = "g_DPCRN_m34_quant_full_int_model_data";
 // #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_model_data.h"
 
 /*======================== Included from GitHub folder ==========================*/
-#include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m34_model_data.h"
-#include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m34_quant_full_int_model_data.h"
 #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m51_quant_full_int_InOuts_float32_model_data.h"
 
 
