@@ -26,9 +26,9 @@ limitations under the License.
 
 #include "tensorflow/lite/micro/examples/avatronics/config.h"
 
-#ifdef PRINT_INTERMEDIATE_TENSORS
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
-#endif
+// #ifdef PRINT_INTERMEDIATE_TENSORS
+// #endif // PRINT_INTERMEDIATE_TENSORS
 
 #if MEASURE_CYCLES_TAKEN == 1
 #define MEASURE_CYCLES 1
@@ -53,6 +53,11 @@ int num_ops=0;
 
 namespace tflite {
 namespace {
+
+// inline int NumDimensions(const TfLiteTensor* t) { return t->dims->size; }
+// inline int SizeOfDimension(const TfLiteTensor* t, int dim) {
+//   return t->dims->data[dim];
+// }
 
 const char* OpNameFromRegistration(const TFLMRegistration* registration) {
   if (registration->builtin_code == BuiltinOperator_CUSTOM) {
@@ -253,12 +258,12 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
 
     int32_t output_size = node->outputs->size;
     int32_t input_size = node->inputs->size;
-#if MODEL_DATATYPE_INT32
+#if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
     int* output_tensors = node->outputs->data;
     int* input_tensors = node->inputs->data;
 #elif MODEL_DATATYPE_DOUBLE
-    int* output_tensors = node->outputs->data;
-    int* input_tensors = node->inputs->data;
+    double* output_tensors = node->outputs->data;
+    double* input_tensors = node->inputs->data;
 #endif
 
     MicroContext* micro_context = GetMicroContext(context_);  
@@ -275,45 +280,53 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
         if (*(input_tensors + j) == -1) {
             MicroPrintf("\t\t\t\tSKIPS WHEN OP -1 !!\n");
         } else {
-            TfLiteTensor* input = micro_context->AllocateTempInputTensor(node, j);
-            TF_LITE_ENSURE(context_, input != nullptr);
-            RuntimeShape input_shape = GetTensorShape(input);
+          MicroPrintf("\t\tnode->inputs->size: %d\n",node->inputs->size);
+          MicroPrintf("\t\tnode->inputs->data[%d]: %d\n",j,node->inputs->data[j]);
+          
+          TfLiteTensor* input = micro_context->AllocateTempInputTensor(node, j);
+          TF_LITE_ENSURE(context_, input != nullptr);
+          RuntimeShape input_shape = GetTensorShape(input);
 
-            MicroPrintf("\t\t\tNumber of dimensions: %d\n", input_shape.DimensionsCount());
-            MicroPrintf("\t\t\tShape: [");
-            if (0 == input_shape.DimensionsCount()) MicroPrintf("]\n"); 
+          int32_t num_dims = input_shape.DimensionsCount();
 
-            for (int k = 0; k < input_shape.DimensionsCount(); k++) {
-               if (k == (input_shape.DimensionsCount() - 1))  {
-                    MicroPrintf("%d]\n", input_shape.Dims(k));
-                } else {
-                    MicroPrintf("%d, ", input_shape.Dims(k));
-                }
-            }
+          input          
 
-            for (int k = 0; k < input_shape.DimensionsCount(); k++) {
-                MicroPrintf("\n\t\t\tValues of dim %d, of size %d:\n\t\t\t\t[", k, input_shape.Dims(k));
+          MicroPrintf("\t\t\tNumber of dimensions: %d\n", num_dims);
+          MicroPrintf("\t\t\tShape: [");
+          if (0 == num_dims) MicroPrintf("]\n"); 
 
-                for (int l = 0; l < input_shape.Dims(k); l++) {
-                    if (l % 14 == 0 && l != 0) {
-                        MicroPrintf("\n\t\t\t\t ");
-                    }
-                    if (l == (input_shape.Dims(k) - 1)) {
-#if MODEL_DATATYPE_INT32
-                        MicroPrintf("%d]\n", input->data.int8[l]);
+          for (int k = 0; k < num_dims; k++) {
+              if (k == (num_dims - 1))  {
+                  MicroPrintf("%d]\n", input_shape.Dims(k));
+              } else {
+                  MicroPrintf("%d, ", input_shape.Dims(k));
+              }
+          }
+          for (int k = 0; k < num_dims; k++) {
+              MicroPrintf("\n\t\t\tValues of dim %d, of size %d:\n\t\t\t\t[", k, input_shape.Dims(k));
+
+              for (int l = 0; l < input_shape.Dims(k); l++) {
+                  if (l % 14 == 0 && l != 0) {
+                      MicroPrintf("\n\t\t\t\t ");
+                  }
+                  if (l == (input_shape.Dims(k) - 1)) {
+#if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
+                      MicroPrintf("%d]\n", input->data.int8[l]);
+
 #elif MODEL_DATATYPE_DOUBLE
-                        MicroPrintf("%f]\n", double(input->data.f[l]));
+                      MicroPrintf("%f]\n", double(input->data.f[l]));
 #endif
-                    } else {
-#if MODEL_DATATYPE_INT32
-                        MicroPrintf("%d, ", input->data.int8[l]);
+                  } else {
+#if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
+                      MicroPrintf("%d, ", input->data.int8[l]);
 #elif MODEL_DATATYPE_DOUBLE
-                        MicroPrintf("%f, ", double(input->data.f[l]));
+                      MicroPrintf("%f, ", double(input->data.f[l]));
 #endif
-                    }
-                }
-            }
-            micro_context->DeallocateTempTfLiteTensor(input);
+                  }
+              }
+          }
+          micro_context->DeallocateTempTfLiteTensor(tensor);
+          micro_context->DeallocateTempTfLiteTensor(input);
         }
     }
 
@@ -353,13 +366,13 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
                         MicroPrintf("\n\t\t\t\t ");
                     }
                     if (l == (output_shape.Dims(k) - 1)) {
-#if MODEL_DATATYPE_INT32
+#if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
                         MicroPrintf("%d]\n", output->data.int8[l]);
 #elif MODEL_DATATYPE_DOUBLE
                         MicroPrintf("%f]\n", double(output->data.f[l]));
 #endif
                     } else {
-#if MODEL_DATATYPE_INT32
+#if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
                         MicroPrintf("%d, ", output->data.int8[l]);
 #elif MODEL_DATATYPE_DOUBLE
                         MicroPrintf("%f, ", double(output->data.f[l]));
