@@ -27,8 +27,6 @@ limitations under the License.
 #include "tensorflow/lite/micro/examples/avatronics/config.h"
 
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
-// #ifdef PRINT_INTERMEDIATE_TENSORS
-// #endif // PRINT_INTERMEDIATE_TENSORS
 
 #if MEASURE_CYCLES_TAKEN == 1
 #define MEASURE_CYCLES 1
