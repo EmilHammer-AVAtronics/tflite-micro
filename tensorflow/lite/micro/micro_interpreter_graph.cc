@@ -284,7 +284,6 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
           TfLiteTensor* input = micro_context->AllocateTempInputTensor(node, j);
           TF_LITE_ENSURE(context_, input != nullptr);
           RuntimeShape input_shape = GetTensorShape(input);
-
           int32_t num_dims = input_shape.DimensionsCount();
 
           input          
