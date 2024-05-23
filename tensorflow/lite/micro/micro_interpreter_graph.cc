@@ -286,8 +286,6 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
           RuntimeShape input_shape = GetTensorShape(input);
           int32_t num_dims = input_shape.DimensionsCount();
 
-          input          
-
           MicroPrintf("\t\t\tNumber of dimensions: %d\n", num_dims);
           MicroPrintf("\t\t\tShape: [");
           if (0 == num_dims) MicroPrintf("]\n"); 
@@ -322,7 +320,6 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
                   }
               }
           }
-          micro_context->DeallocateTempTfLiteTensor(tensor);
           micro_context->DeallocateTempTfLiteTensor(input);
         }
     }
