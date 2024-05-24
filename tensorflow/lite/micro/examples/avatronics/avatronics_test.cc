@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. 
 ==============================================================================*/
-#include "Airoha_DPCRN_m34_quant_full_int.h"
+#include "airoha_nn_model.h"
 
 int main() {
   int ret = avatronics_test(); 
