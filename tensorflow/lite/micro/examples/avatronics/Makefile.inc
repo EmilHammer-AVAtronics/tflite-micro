@@ -1,10 +1,10 @@
 AVATRONICS_TEST_SRCS := \
 $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/avatronics_test.cc \
-$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/Airoha_DPCRN_m34_quant_full_int.cc
+$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/airoha_nn_model.cc
 
 AVATRONICS_SRCS := \
 $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/avatronics_test.cc \
-$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/Airoha_DPCRN_m34_quant_full_int.cc
+$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/airoha_nn_model.cc
 
 AVATRONICS_HDRS :=
 
@@ -19,17 +19,23 @@ $(info Files in $(TFLITE_DIR): $(TFLITE_BASENAMES))
 $(foreach file,$(TFLITE_BASENAMES), $(shell python3 $(TENSORFLOW_ROOT)tflite_visualize.py $(TFLITE_DIR)$(file).tflite $(TFLITE_DIR)$(file)_visualization.html))
 
 AVATRONICS_GENERATOR_INPUTS := \
-    $(foreach file, $(TFLITE_BASENAMES), $(TFLITE_DIR)$(file).tflite) 
+    $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m51_quant_full_int_InOuts_float32.tflite \
+    $(foreach file, $(TFLITE_BASENAMES), $(TFLITE_DIR)$(file).tflite)
+
     # $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int.tflite \
     # $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34.tflite
 
 AVATRONICS_GENERATED_SRCS := \
-    $(foreach file, $(TFLITE_BASENAMES), $(GENERATED_SRCS_DIR)$(TFLITE_DIR)$(file).cc) 
+    $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m51_quant_full_int_InOuts_float32_model_data.cc \
+    $(foreach file, $(TFLITE_BASENAMES), $(GENERATED_SRCS_DIR)$(TFLITE_DIR)$(file).cc)
+
     # $(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int.cc \
     # $(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34.cc
 
 AVATRONICS_GENERATED_HDRS := \
-    $(foreach file, $(TFLITE_BASENAMES), $(GENERATED_SRCS_DIR)$(TFLITE_DIR)$(file).h) 
+    $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m51_quant_full_int_InOuts_float32_model_data.h \
+    $(foreach file, $(TFLITE_BASENAMES), $(GENERATED_SRCS_DIR)$(TFLITE_DIR)$(file).h)
+
     # $(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int.h \
     # $(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34.h
 
