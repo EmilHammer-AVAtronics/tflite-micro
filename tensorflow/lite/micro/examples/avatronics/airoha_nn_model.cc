@@ -42,8 +42,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m51_quant_full_int_InOuts_float32_21_05_2024_model_data.h"
 
 /*======================== Included from GitHub folder ==========================*/
-// #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m51_quant_full_int_InOuts_float32_model_data.h"
-// #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m51_quant_full_int_InOuts_float32_21_05_2024_model_data.h"
+#include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024_model_data.h"
 
 
 #if MEASURE_CYCLES_TAKEN == 2
