@@ -42,7 +42,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m51_quant_full_int_InOuts_float32_21_05_2024_model_data.h"
 
 /*======================== Included from GitHub folder ==========================*/
-#include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024_model_data.h"
+// #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024_model_data.h"
 
 
 #if MEASURE_CYCLES_TAKEN == 2
@@ -77,7 +77,7 @@ int nn_setup() {
   /*  INT8    = g_DPCRN_m34_quant_full_int_model_data                         */
   /*  Float32 = g_DPCRN_m34_model_data                                        */
   /*  g_DPCRN_m51_quant_full_int_InOuts_float32_model_data                    */
-  model = ::tflite::GetModel(g_DPCRN_m51_quant_full_int_InOuts_float32_21_05_2024_model_data);
+  model = ::tflite::GetModel(g_DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024_model_data);
   TFLITE_CHECK_EQ(model->version(), TFLITE_SCHEMA_VERSION);
 
   static tflite::MicroMutableOpResolver<20> micro_op_resolver;

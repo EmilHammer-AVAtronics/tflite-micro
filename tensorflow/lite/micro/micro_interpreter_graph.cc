@@ -278,9 +278,6 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
         if (*(input_tensors + j) == -1) {
             MicroPrintf("\t\t\t\tSKIPS WHEN OP -1 !!\n");
         } else {
-          MicroPrintf("\t\tnode->inputs->size: %d\n",node->inputs->size);
-          MicroPrintf("\t\tnode->inputs->data[%d]: %d\n",j,node->inputs->data[j]);
-          
           TfLiteTensor* input = micro_context->AllocateTempInputTensor(node, j);
           TF_LITE_ENSURE(context_, input != nullptr);
           RuntimeShape input_shape = GetTensorShape(input);
@@ -297,8 +294,17 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
                   MicroPrintf("%d, ", input_shape.Dims(k));
               }
           }
+          MicroPrintf("\n\t\t\tinput_tensors: %d", *(input_tensors + j));
           for (int k = 0; k < num_dims; k++) {
-              MicroPrintf("\n\t\t\tValues of dim %d, of size %d:\n\t\t\t\t[", k, input_shape.Dims(k));
+              int index = 1;
+
+              /* calculates the stride for dimension k*/
+              for (int p= k+1; p < num_dims; p++){
+                index *= input_shape.Dims(p);
+              }
+
+              MicroPrintf("\n\t\t\tValues of dim %d, of size %d:", k, input_shape.Dims(k));
+              MicroPrintf("\n\t\t\tStride of %d\n\t\t\t\t[", index);
 
               for (int l = 0; l < input_shape.Dims(k); l++) {
                   if (l % 14 == 0 && l != 0) {
@@ -306,16 +312,16 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
                   }
                   if (l == (input_shape.Dims(k) - 1)) {
 #if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
-                      MicroPrintf("%d]\n", input->data.int8[l]);
+                      MicroPrintf("%d]\n", input->data.int8[l*index]);
 
 #elif MODEL_DATATYPE_DOUBLE
-                      MicroPrintf("%f]\n", double(input->data.f[l]));
+                      MicroPrintf("%f]\n", double(input->data.f[l*index]));
 #endif
                   } else {
 #if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
-                      MicroPrintf("%d, ", input->data.int8[l]);
+                      MicroPrintf("%d, ", input->data.int8[l*index]);
 #elif MODEL_DATATYPE_DOUBLE
-                      MicroPrintf("%f, ", double(input->data.f[l]));
+                      MicroPrintf("%f, ", double(input->data.f[l*index]));
 #endif
                   }
               }
@@ -325,7 +331,6 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
     }
 
   /* OUTPUT */
-
     MicroPrintf("\tNumber of outputs %d:\n", output_size);
     for (int j = 0; j < output_size; j++) {
         MicroPrintf("\tOutput(%d) -->\tTensor %d\n", j, *(output_tensors + j));
@@ -339,21 +344,31 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
             TfLiteTensor* output = micro_context->AllocateTempOutputTensor(node, j);
             TF_LITE_ENSURE(context_, output != nullptr);
             RuntimeShape output_shape = GetTensorShape(output);
+            int32_t num_dims = output_shape.DimensionsCount();
 
-            MicroPrintf("\t\t\tNumber of dimensions: %d\n", output_shape.DimensionsCount());
+            MicroPrintf("\t\t\tNumber of dimensions: %d\n", num_dims);
             MicroPrintf("\t\t\tShape:\t[");
-            if (0 == output_shape.DimensionsCount()) MicroPrintf("]\n"); 
+            if (0 == num_dims) MicroPrintf("]\n"); 
 
-            for (int k = 0; k < output_shape.DimensionsCount(); k++) {
-                if (k == (output_shape.DimensionsCount() - 1)) {
+            for (int k = 0; k < num_dims; k++) {
+                if (k == (num_dims - 1)) {
                     MicroPrintf("%d]\n", output_shape.Dims(k));
                 } else {
                     MicroPrintf("%d, ", output_shape.Dims(k));
                 }
             }
+            MicroPrintf("\n\t\t\tinput_tensors: %d", *(output_tensors + j));
+            for (int k = 0; k < num_dims; k++) {
+              int stride = 1;
 
-            for (int k = 0; k < output_shape.DimensionsCount(); k++) {
-                MicroPrintf("\n\t\t\tValues of dim %d, of size %d:\n\t\t\t\t[", k, output_shape.Dims(k));
+              /* calculates the stride for dimension k*/
+              for (int p= k+1; p < num_dims; p++){
+                stride *= output_shape.Dims(p);
+              }
+
+              // Calculate the index in the flat array
+              MicroPrintf("\n\t\t\tValues of dim %d, of size %d:", k, output_shape.Dims(k));
+              MicroPrintf("\n\t\t\tStride: %d\n\t\t\t\t[", stride);
 
                 for (int l = 0; l < output_shape.Dims(k); l++) {
                     if (l % 14 == 0 && l != 0) {
@@ -361,15 +376,15 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
                     }
                     if (l == (output_shape.Dims(k) - 1)) {
 #if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
-                        MicroPrintf("%d]\n", output->data.int8[l]);
+                        MicroPrintf("%d]\n", output->data.int8[l*stride]);
 #elif MODEL_DATATYPE_DOUBLE
-                        MicroPrintf("%f]\n", double(output->data.f[l]));
+                        MicroPrintf("%f]\n", double(output->data.f[l*stride]));
 #endif
                     } else {
 #if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
-                        MicroPrintf("%d, ", output->data.int8[l]);
+                        MicroPrintf("%d, ", output->data.int8[l*stride]);
 #elif MODEL_DATATYPE_DOUBLE
-                        MicroPrintf("%f, ", double(output->data.f[l]));
+                        MicroPrintf("%f, ", double(output->data.f[l*stride]));
 #endif
                     }
                 }
