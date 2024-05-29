@@ -74,9 +74,6 @@ namespace {
 int nn_setup() {
   tflite::InitializeTarget();
 
-  /*  INT8    = g_DPCRN_m34_quant_full_int_model_data                         */
-  /*  Float32 = g_DPCRN_m34_model_data                                        */
-  /*  g_DPCRN_m51_quant_full_int_InOuts_float32_model_data                    */
   model = ::tflite::GetModel(g_DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024_model_data);
   TFLITE_CHECK_EQ(model->version(), TFLITE_SCHEMA_VERSION);
 
