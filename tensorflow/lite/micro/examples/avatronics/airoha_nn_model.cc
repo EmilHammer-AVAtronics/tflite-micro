@@ -298,8 +298,8 @@ int avatronics_test() {
   }
 
   /* Declaring outputs */
-  constexpr int32_t outputTensorShapes[] = {(1*1*257) , (1*1*257),
-                                            (1*1*8*32), (1*1*257)};
+  constexpr int32_t outputTensorShapes[] = {(1*1*257), (1*1*8*32),
+                                            (1*1*257), (1*1*257)};
 
 #if MODEL_DATATYPE_INT32
   int32_t outputTensor_0[outputTensorShapes[0]];
