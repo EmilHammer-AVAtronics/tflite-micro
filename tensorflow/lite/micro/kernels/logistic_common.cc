@@ -54,10 +54,8 @@ TfLiteStatus CalculateArithmeticOpDataLogistic(TfLiteContext* context,
     data->input_zero_point = input->params.zero_point;
 
     const double q = std::frexp(input_real_multiplier, &data->input_left_shift);
-    MicroPrintf("\nq:",q);
-
+    
     data->input_multiplier = static_cast<int32_t>(TfLiteRound(q * (1ll << 31)));
-    MicroPrintf("\ndata->input_multiplier:%d",data->input_multiplier);
 
     data->input_range_radius =
         CalculateInputRadius(kInputIntegerBits, data->input_left_shift, 31);
