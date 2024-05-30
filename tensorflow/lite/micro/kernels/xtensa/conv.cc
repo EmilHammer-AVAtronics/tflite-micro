@@ -54,9 +54,21 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 
   switch (input->type) {
     case kTfLiteFloat32: {
-      MicroPrintf("\n Running: AVA self made conv2d kTfLiteFloat32\n");
-      return ConvEvalHifiFloat32(context, node, params, op_data, input, filter, /* AVA self made*/
-                                bias, output);
+      MicroPrintf("\nkTfLiteFloat32");
+      // return ConvEvalHifiFloat32(context, node, params, op_data, input, filter, /* AVA self made*/
+      //                     bias, output);
+      tflite::reference_ops::Conv(
+          ConvParamsFloat(params, op_data.reference_op_data),
+          tflite::micro::GetTensorShape(input),
+          tflite::micro::GetTensorData<float>(input),
+          tflite::micro::GetTensorShape(filter),
+          tflite::micro::GetTensorData<float>(filter),
+          tflite::micro::GetTensorShape(bias),
+          tflite::micro::GetOptionalTensorData<float>(bias),
+          tflite::micro::GetTensorShape(output),
+          tflite::micro::GetTensorData<float>(output),
+          tflite::micro::GetTensorShape(nullptr), nullptr);
+      break;
     }
     case kTfLiteInt8: {
 #if defined(HIFI3) || defined(HIFI4) || defined(HIFI5)
