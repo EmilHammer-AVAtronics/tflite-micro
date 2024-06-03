@@ -14,3 +14,5 @@ gen
 # Ignore the `external` symlink added by `bazel-compile-commands-extractor`
 /external
 /*.txt
+/*.pdf
+tensorflow/lite/micro/examples/avatronics/unused_models/*
