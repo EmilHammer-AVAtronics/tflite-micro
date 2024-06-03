@@ -357,7 +357,7 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
                     MicroPrintf("%d, ", output_shape.Dims(k));
                 }
             }
-            MicroPrintf("\n\t\t\tinput_tensors: %d", *(output_tensors + j));
+            MicroPrintf("\n\t\t\tOutput_tensors: %d", *(output_tensors + j));
             for (int k = 0; k < num_dims; k++) {
               int stride = 1;
 
