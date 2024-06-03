@@ -326,6 +326,46 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
                   }
               }
           }
+#if PRINT_FULL_TENSOR
+                      /*Printing all tensor values */
+            int total_numbers_of_values = 1;
+            for (int k = 0; k < num_dims; k++) {
+                  total_numbers_of_values *= input_shape.Dims(k);
+              }
+            
+            int count_greater_than_one = 0;
+            for (int k = 0; k < num_dims; k++) {
+                if (input_shape.Dims(k) > 1) {
+                    count_greater_than_one++;
+                }
+            }
+
+            if (count_greater_than_one >= 2) {
+            MicroPrintf("\n\n\t\t\tPrinting all tensor values:");
+
+
+            MicroPrintf("\n\t\t\tTotal numbers of values: %d\n\t\t\t\t[", total_numbers_of_values);
+
+            for (int l = 0; l < total_numbers_of_values; l++) {
+                if (l % 14 == 0 && l != 0) {
+                    MicroPrintf("\n\t\t\t\t "); 
+                }
+                if (l == (total_numbers_of_values - 1)) {
+#if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
+                    MicroPrintf("%d]\n", input->data.int8[l]);
+#elif MODEL_DATATYPE_DOUBLE
+                    MicroPrintf("%f]\n", double(output->data.f[l]));
+#endif
+                } else {
+#if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
+                    MicroPrintf("%d, ", input->data.int8[l]);
+#elif MODEL_DATATYPE_DOUBLE
+                    MicroPrintf("%f, ", double(output->data.f[l]));
+#endif
+                  }
+              }
+            } 
+#endif // PRINT_FULL_TENSOR
           micro_context->DeallocateTempTfLiteTensor(input);
         }
     }
@@ -389,6 +429,46 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
                     }
                 }
             }
+#if PRINT_FULL_TENSOR
+              /*Printing all tensor values */
+              int total_numbers_of_values = 1;
+              for (int k = 0; k < num_dims; k++) {
+                    total_numbers_of_values *= output_shape.Dims(k);
+                }
+              
+              int count_greater_than_one = 0;
+              for (int k = 0; k < num_dims; k++) {
+                  if (output_shape.Dims(k) > 1) {
+                      count_greater_than_one++;
+                  }
+              }
+
+              if (count_greater_than_one >= 2) {
+              MicroPrintf("\n\n\t\t\tPrinting all tensor values:");
+
+
+              MicroPrintf("\n\t\t\tTotal numbers of values: %d\n\t\t\t\t[", total_numbers_of_values);
+
+              for (int l = 0; l < total_numbers_of_values; l++) {
+                  if (l % 14 == 0 && l != 0) {
+                      MicroPrintf("\n\t\t\t\t ");
+                  }
+                  if (l == (total_numbers_of_values - 1)) {
+#if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
+                      MicroPrintf("%d]\n", output->data.int8[l]);
+#elif MODEL_DATATYPE_DOUBLE
+                      MicroPrintf("%f]\n", double(output->data.f[l]));
+#endif
+                  } else {
+#if MODEL_DATATYPE_INT32 || FULL_INT_INOUTS_FLOAT32
+                      MicroPrintf("%d, ", output->data.int8[l]);
+#elif MODEL_DATATYPE_DOUBLE
+                      MicroPrintf("%f, ", double(output->data.f[l]));
+#endif
+                   }
+                }
+              }
+#endif // PRINT_FULL_TENSOR
             micro_context->DeallocateTempTfLiteTensor(output);
         }
     }
