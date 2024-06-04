@@ -326,11 +326,25 @@ int avatronics_test() {
     }
   }
 
-  /*Calling functions to perform NN*/
-  if (wrapper_nn_setup() != 0) MicroPrintf("\n\n ERROR %d !!!", ret);
+  /*Test wrapper_nn_setup*/
+  if (wrapper_nn_setup()){
+    MicroPrintf("\nWRAPPER_NN_SETUP FAILS!\n");
+    return 0;
+  } 
 
-  wrapper_nn_inference(&numOfInputs, inputTensors, inputTensorShapes,
-                       &numOfOutputs, outputTensors, outputTensorShapes);
+  /*Test return_value_test*/
+  if (return_value_test(&numElementsInputTensors, inputTensors, inputTensorShapes,
+                       &numElementsOutputTensors, outputTensors, outputTensorShapes)) {
+    MicroPrintf("\nRETURN_VALUE_TEST FAILS!\n");
+    return 0;
+  }
+  
+  /*Test wrapper_nn_inference*/
+  if (wrapper_nn_inference(&numElementsInputTensors, inputTensors, inputTensorShapes,
+                       &numElementsOutputTensors, outputTensors, outputTensorShapes)) {
+    MicroPrintf("\nWRAPPER_NN_INFERENCE FAILS!\n");
+    return 0;
+  }
 
   /* Print the input tp NN*/
   MicroPrintf("\nInput values: (%d)", numOfInputs);
