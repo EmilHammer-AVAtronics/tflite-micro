@@ -266,8 +266,6 @@ if (*inputTensorValues == 4) inputTensorValues_var = 7;
 
 
 int avatronics_test() { 
-  int ret = 0;
-  int k = 0;
   constexpr int32_t inputTensorShapes[] = {(1*1*8*32), (1*1*257*3)};
 
 
@@ -285,10 +283,11 @@ int avatronics_test() {
   double* inputTensors[] = {inputTensor_0, inputTensor_1};
 #endif
 
-  int8_t numOfInputs = sizeof(inputTensors) / sizeof(inputTensors[0]);
+  int8_t numElementsInputTensors = sizeof(inputTensors) / sizeof(inputTensors[0]);
+  
   /* Initializing whole input array equal zero */
-  for (int i = 0; i < (numOfInputs); ++i) {
-    for (int j = 0; j < inputTensorShapes[i]; ++j, k++) {
+  for (int i = 0; i < (numElementsInputTensors); ++i) {
+    for (int j = 0; j < inputTensorShapes[i]; ++j) {
         inputTensors[i][j] = {0};
     }
   k = 0;
@@ -318,9 +317,9 @@ int avatronics_test() {
                               outputTensor_2, outputTensor_3};
 #endif
 
-  int8_t numOfOutputs = sizeof(outputTensors) / sizeof(outputTensors[0]);
+  int8_t numElementsOutputTensors = sizeof(outputTensors) / sizeof(outputTensors[0]);
 
-  for (int i = 0; i < numOfOutputs; i++) {
+  for (int i = 0; i < numElementsOutputTensors; i++) {
     for (int j = 0; j < outputTensorShapes[i]; j++) {
       outputTensors[i][j] = 0;
     }
@@ -347,8 +346,8 @@ int avatronics_test() {
   }
 
   /* Print the input tp NN*/
-  MicroPrintf("\nInput values: (%d)", numOfInputs);
-  for (int i = 0; i < numOfInputs; i++){
+  MicroPrintf("\nInput values: (%d)", numElementsInputTensors);
+  for (int i = 0; i < numElementsInputTensors; i++){
   MicroPrintf("\n\tInputTensor_%d: (%d) \n\t\t[",i, inputTensorShapes[i]);
     for (int j = 0; j < inputTensorShapes[i]; j++) {
       if (j % 28 == 0 && j!=0){
@@ -364,8 +363,8 @@ int avatronics_test() {
   }
 
   /* Prints the predections*/
-  MicroPrintf("\nOutput values: (%d)",numOfOutputs);
-  for (int i = 0; i < numOfOutputs; i++) {
+  MicroPrintf("\nOutput values: (%d)",numElementsOutputTensors);
+  for (int i = 0; i < numElementsOutputTensors; i++) {
     MicroPrintf("\n\tOutputTensor_%d: (%d) \n\t\t[", i, outputTensorShapes[i]);
     for (int j = 0; j < outputTensorShapes[i]; j++) {
       if (j % 14 == 0 && j != 0) { 
