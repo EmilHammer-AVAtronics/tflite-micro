@@ -290,7 +290,6 @@ int avatronics_test() {
     for (int j = 0; j < inputTensorShapes[i]; ++j) {
         inputTensors[i][j] = {0};
     }
-  k = 0;
   }
 
   /* Declaring outputs */
