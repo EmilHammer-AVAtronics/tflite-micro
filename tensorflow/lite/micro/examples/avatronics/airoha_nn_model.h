@@ -2,7 +2,11 @@
 #include <stdint.h>
 
 extern int avatronics_test(); 
- 
+
+extern "C" int inputs_size();
+
+extern "C" int outputs_size();
+
 extern "C" int wrapper_nn_setup();
 
 /**
@@ -17,10 +21,10 @@ extern "C" int wrapper_nn_setup();
  *         0 indicates success, while other values indicate errors.
  */ 
 
-extern "C" int wrapper_nn_inference_int32(int8_t* numElementsInputTensors, int32_t** inputTensors, const int32_t* inputTensorValues, int8_t* numElementsOutputTensors, int32_t** outputTensors, const int32_t* outputTensorValues);
+extern "C" int wrapper_nn_inference_int32(int8_t* numElementsInputTensors, int32_t** inputTensors, const int32_t* intputTensorShapes, int8_t* numElementsOutputTensors, int32_t** outputTensors, const int32_t* outputTensorShapes);
 
-extern "C" int wrapper_nn_inference_double(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* inputTensorValues, int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorValues);
+extern "C" int wrapper_nn_inference_double(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* intputTensorShapes, int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorShapes);
 
-extern "C" int wrapper_nn_inference_test(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* inputTensorValues, int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorValues);
+extern "C" int wrapper_nn_inference_test(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* intputTensorShapes, int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorShapes);
 
-extern "C" int return_value_test(int8_t* numElementsInputTensors, double** inputTensors);
+extern "C" int return_value_test(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* intputTensorShapes, int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorShapes);

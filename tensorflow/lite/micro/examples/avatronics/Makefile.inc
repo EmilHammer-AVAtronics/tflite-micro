@@ -20,20 +20,23 @@ $(foreach file,$(TFLITE_BASENAMES), $(shell python3 $(TENSORFLOW_ROOT)tflite_vis
 
 AVATRONICS_GENERATOR_INPUTS := \
     $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024.tflite \
+    $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m53_quant_full_int_InOuts_float32_31_5_2024.tflite \
     $(foreach file, $(TFLITE_BASENAMES), $(TFLITE_DIR)$(file).tflite)
 
     # $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int.tflite \
     # $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34.tflite
 
 AVATRONICS_GENERATED_SRCS := \
-    $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024.tflite_model_data.cc \
+    $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024_model_data.cc \
+    $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m53_quant_full_int_InOuts_float32_31_5_2024_model_data.cc \
     $(foreach file, $(TFLITE_BASENAMES), $(GENERATED_SRCS_DIR)$(TFLITE_DIR)$(file).cc)
 
     # $(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int.cc \
     # $(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34.cc
 
 AVATRONICS_GENERATED_HDRS := \
-    $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024.tflite_model_data.h \
+    $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024_model_data.h \
+    $(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m53_quant_full_int_InOuts_float32_31_5_2024_model_data.h \
     $(foreach file, $(TFLITE_BASENAMES), $(GENERATED_SRCS_DIR)$(TFLITE_DIR)$(file).h)
 
     # $(GENERATED_SRCS_DIR)$(TENSORFLOW_ROOT)tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int.h \

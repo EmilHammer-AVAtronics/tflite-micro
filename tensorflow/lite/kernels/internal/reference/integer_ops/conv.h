@@ -18,6 +18,7 @@ limitations under the License.
 #include <algorithm>
 
 #include "tensorflow/lite/kernels/internal/common.h"
+#include "tensorflow/lite/micro/examples/avatronics/config.h"
 
 namespace tflite {
 namespace reference_integer_ops {

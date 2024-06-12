@@ -24,7 +24,20 @@ limitations under the License.
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/micro_log.h"
 
+#include "tensorflow/lite/micro/examples/avatronics/config.h"
+#include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
+
 namespace tflite {
+
+  int getParamsOfTensor(RuntimeShape tensor){
+    int dims = tensor.DimensionsCount();
+    int ret =1;
+    for (int i = 0; i < dims; i++){
+      ret *= tensor.Dims(i);
+    }
+    return ret;
+  }
+
 namespace {
 
 TfLiteStatus ConvEval(TfLiteContext* context, TfLiteNode* node) {

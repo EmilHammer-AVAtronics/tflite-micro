@@ -38,11 +38,14 @@ limitations under the License.
 // #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_quant_full_int_model_data.h"
 // #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m34_model_data.h"
 
-/*========== LOCAL MODELS TO AIROAH =================*/
-#include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024_model_data.h"
+/*========== LOCAL MODELS TO AIROHA =================*/
+// #include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024_model_data.h"
+#include "tensorflow/lite/micro/examples/avatronics/models/DPCRN_m53_quant_full_int_InOuts_float32_31_5_2024_model_data.h"
 
 /*======================== Included from GitHub folder ==========================*/
-// #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024_model_data.h"
+// #include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m61_quant_full_int_InOuts_float32_7_6_2024_model_data.h"
+#include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m62_quant_full_int_InOuts_float32_7_6_2024_model_data.h"
+#include "../../shared_ubuntu/AVAHEEAR/AVA_DPCRN/pretrained_weights/DPCRN_S/airoha_models/DPCRN_m63_quant_full_int_InOuts_float32_model_data.h"
 
 
 #if MEASURE_CYCLES_TAKEN == 2
@@ -63,43 +66,44 @@ limitations under the License.
 #include "third_party/avatronics/xt_profiler.h"
 #endif //MEASURE_CYCLES
 
-
 namespace {
   tflite::MicroInterpreter* global_interpreter = nullptr;
-  constexpr int kTensorArenaSize = 100000;
+  // constexpr int kTensorArenaSize = 57000;
+  constexpr int kTensorArenaSize = 76000;
+  // constexpr int kTensorArenaSize = 73150; // error 139
   alignas(16) static uint8_t tensor_arena[kTensorArenaSize];
   const tflite::Model* model = nullptr;
-} 
+}
 
 int nn_setup() {
   tflite::InitializeTarget();
 
-  model = ::tflite::GetModel(g_DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024_model_data);
+  // model = ::tflite::GetModel(g_DPCRN_m52_quant_full_int_InOuts_float32_28_5_2024_model_data);
+  // model = ::tflite::GetModel(g_DPCRN_m53_quant_full_int_InOuts_float32_31_5_2024_model_data); 
+  // model = ::tflite::GetModel(g_DPCRN_m62_quant_full_int_InOuts_float32_7_6_2024_model_data);
+  model = ::tflite::GetModel(g_DPCRN_m63_quant_full_int_InOuts_float32_model_data);
   TFLITE_CHECK_EQ(model->version(), TFLITE_SCHEMA_VERSION);
 
-  static tflite::MicroMutableOpResolver<20> micro_op_resolver;
+  static tflite::MicroMutableOpResolver<19> micro_op_resolver;
+  micro_op_resolver.AddQuantize();
   micro_op_resolver.AddStridedSlice();
-  micro_op_resolver.AddMul();
-  micro_op_resolver.AddAdd();
   micro_op_resolver.AddPad();
   micro_op_resolver.AddFullyConnected();
   micro_op_resolver.AddConv2D();
   micro_op_resolver.AddReshape();
   micro_op_resolver.AddUnpack();
   micro_op_resolver.AddLogistic();
+  micro_op_resolver.AddMul();
   micro_op_resolver.AddSub();
+  micro_op_resolver.AddAdd();
   micro_op_resolver.AddTanh();
   micro_op_resolver.AddPack();
   micro_op_resolver.AddMean();
   micro_op_resolver.AddSquaredDifference();
   micro_op_resolver.AddRsqrt();
   micro_op_resolver.AddConcatenation();
-  micro_op_resolver.AddTransposeConv();
-  // These are added for DPCRN_m51_quant_full_int_InOuts_float32 
-  micro_op_resolver.AddQuantize();
   micro_op_resolver.AddDequantize();
-  micro_op_resolver.AddDiv();
-
+  micro_op_resolver.AddTransposeConv();
 
   static tflite::MicroInterpreter static_interpreter(model, micro_op_resolver, tensor_arena, kTensorArenaSize);
   global_interpreter = &static_interpreter;
@@ -165,46 +169,6 @@ if (kTfLiteOk != global_interpreter->Invoke()) return 1;
   return 0;
 } 
 
-template <typename T>         
-int nn_inference_test(int8_t* numElementsInputTensors, T** inputTensors, const int32_t* inputTensorValues,
-                  int8_t* numElementsOutputTensors, T** outputTensors, const int32_t* outputTensorValues) {                  
-
-
-//   for (int i = 0; i < *numElementsInputTensors; ++i) {
-//     for (int j = 0; j < inputTensorValues[i]; ++j) {
-//         global_interpreter->input(i)->data.f[j] = inputTensors[i][j];
-//     }
-//   }
-
-// if (kTfLiteOk != global_interpreter->Invoke()) return 1;
-
-
-//   for (int i = 0; i < *numElementsOutputTensors; i++ ) {
-//     for (int j = 0; j < outputTensorValues[i]; j++ ) {
-//       outputTensors[i][j] = double(global_interpreter->output(i)->data.f[j]);
-//       }
-//     }
-  if (numElementsInputTensors !=0 ) {
-    return 1;
-  }
-  if (inputTensors !=0 ) {
-    return 2;
-  }
-  if (inputTensorValues !=0 ) {
-    return 3;
-  }
-  if (numElementsOutputTensors !=0 ) {
-    return 4;
-  }
-  if (outputTensors !=0 ) {
-    return 5;
-  }
-  if (outputTensorValues !=0 ) {
-    return 6;
-  }
-  return 0;
-} 
-
 int wrapper_nn_setup(){
   int ret = nn_setup();
   return ret;
@@ -218,55 +182,65 @@ int wrapper_nn_inference(int8_t* numOfInputs, T** inputTensors, const int32_t* i
                            numOfOutputs, outputTensors, outputTensorShapes);
     return ret;
 }
-template <typename T>
-int wrapper_nn_inference_test(int8_t* numOfInputs, T** inputTensors, const int32_t* inputTensorShapes, \
-                         int8_t* numOfOutputs, T** outputTensors, const int32_t* outputTensorShapes) {
 
-    int ret = nn_inference_test(numOfInputs, inputTensors, inputTensorShapes, \
-                           numOfOutputs, outputTensors, outputTensorShapes);
-    return ret;
+
+int inputs_size(){
+  return global_interpreter->inputs_size();
 }
 
-int wrapper_nn_inference_int32(int8_t* numElementsInputTensors, int32_t** inputTensors, \
-                               const int32_t* inputTensorValues, int8_t* numElementsOutputTensors, \
-                               int32_t** outputTensors, const int32_t* outputTensorValues) {
-                                
-    wrapper_nn_inference<int32_t>(numElementsInputTensors, inputTensors, inputTensorValues,
-                                   numElementsOutputTensors, outputTensors, outputTensorValues);
-    return 0;
+int outputs_size(){
+  return global_interpreter->outputs_size();
 }
 
-int wrapper_nn_inference_double(int8_t* numElementsInputTensors, double** inputTensors, \
-                                const int32_t* inputTensorValues, int8_t* numElementsOutputTensors, \
-                                double** outputTensors, const int32_t* outputTensorValues) {
-
-    nn_inference_test(numElementsInputTensors, inputTensors, inputTensorValues, \
-                      numElementsOutputTensors, outputTensors, outputTensorValues);
-    return 0;
+int initialization_status(){
+  return global_interpreter->initialization_status();
 }
 
-int wrapper_nn_inference_test(int8_t* numElementsInputTensors, double** inputTensors, \
-                                const int32_t* inputTensorValues, int8_t* numElementsOutputTensors, \
-                                double** outputTensors, const int32_t* outputTensorValues) {
+int inference_test(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* inputTensorShapes,
+                      int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorShapes){
+if (kTfLiteOk != global_interpreter->initialization_status()) return 1;
 
-    int ret = wrapper_nn_inference_test<double>(numElementsInputTensors, inputTensors, inputTensorValues, \
-                                 numElementsOutputTensors, outputTensors, outputTensorValues);
-    return ret;
+  for (int i = 0; i < *numElementsInputTensors; ++i) {
+    for (int j = 0; j < static_cast<int>(inputTensorShapes[i]); ++j) {
+      if (j < static_cast<int>(global_interpreter->input(i)->bytes / sizeof(float))) { // test for out-of bounds
+        global_interpreter->input(i)->data.f[j] = inputTensors[i][j];
+      } else {
+        return 2; // out of bound
+      }
+    }
+  }
+
+  TfLiteStatus status = global_interpreter->Invoke();
+  if (status != kTfLiteOk) {
+    return 3;
+  }
+
+  for (int i = 0; i < *numElementsOutputTensors; i++ ) {
+    for (int j = 0; j < static_cast<int>(outputTensorShapes[i]); j++ ) {
+     if (j < static_cast<int>(global_interpreter->output(i)->bytes / sizeof(float))) { // test for out-of bounds
+        outputTensors[i][j] = static_cast<double>(global_interpreter->output(i)->data.f[j]);
+      } else {
+        return 4; // out of bound
+      }
+    }
+  }
+  return 0;
 }
 
-int inputTensorValues_var = 0;
-int return_value_test(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* inputTensorValues){
+int return_value_test(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* inputTensorShapes,
+                      int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorShapes){
+  /*Input*/
+  *numElementsInputTensors = 1;
+  inputTensors[0][0] = 2;
 
-if (*numElementsInputTensors == 1) *numElementsInputTensors = 3;
-if (inputTensors[0][0] == 1) inputTensors[0][0] = 5;
-if (*inputTensorValues == 4) inputTensorValues_var = 7;
-
-  return inputTensorValues_var;
+  /*Output*/
+  *numElementsOutputTensors = 3;
+  outputTensors[0][0] = 4;
+  return 0;
 }
-
 
 int avatronics_test() { 
-  constexpr int32_t inputTensorShapes[] = {(1*1*8*32), (1*1*257*3)};
+  constexpr int32_t inputTensorShapes[] = {(1*0*8*32), (1*1*257*3)};
 
 
 #if MODEL_DATATYPE_INT32
@@ -286,15 +260,20 @@ int avatronics_test() {
   int8_t numElementsInputTensors = sizeof(inputTensors) / sizeof(inputTensors[0]);
   
   /* Initializing whole input array equal zero */
+  int counter = 0;
   for (int i = 0; i < (numElementsInputTensors); ++i) {
     for (int j = 0; j < inputTensorShapes[i]; ++j) {
-        inputTensors[i][j] = {0};
+        inputTensors[i][j] = counter;
+      counter++;
     }
   }
 
   /* Declaring outputs */
-  constexpr int32_t outputTensorShapes[] = {(1*1*257), (1*1*8*32),
-                                            (1*1*257), (1*1*257)};
+  constexpr int32_t outputTensorShapes[] = {(1*1*257),
+                                            //(1*1*8*32),
+                                            (1*1*257),
+                                            (1*1*257)
+                                            };
 
 #if MODEL_DATATYPE_INT32
   int32_t outputTensor_0[outputTensorShapes[0]];
@@ -305,19 +284,23 @@ int avatronics_test() {
   double outputTensor_0[outputTensorShapes[0]];
   double outputTensor_1[outputTensorShapes[1]];
   double outputTensor_2[outputTensorShapes[2]];
-  double outputTensor_3[outputTensorShapes[3]];
+  // double outputTensor_3[outputTensorShapes[3]];
 #endif
   
 #if MODEL_DATATYPE_INT32
-  int32_t *outputTensors[] = {outputTensor_0, outputTensor_1,
-                              outputTensor_2, outputTensor_3};
+  int32_t *outputTensors[] = {outputTensor_0,
+                              outputTensor_1,
+                              outputTensor_2,
+                              outputTensor_3};
 #elif MODEL_DATATYPE_DOUBLE || FULL_INT_INOUTS_FLOAT32
-  double *outputTensors[] = {outputTensor_0, outputTensor_1,
-                              outputTensor_2, outputTensor_3};
+  double *outputTensors[] = {outputTensor_0,
+                             outputTensor_1,
+                             outputTensor_2,
+                            //  outputTensor_3
+                             };
 #endif
 
   int8_t numElementsOutputTensors = sizeof(outputTensors) / sizeof(outputTensors[0]);
-
   for (int i = 0; i < numElementsOutputTensors; i++) {
     for (int j = 0; j < outputTensorShapes[i]; j++) {
       outputTensors[i][j] = 0;
@@ -330,11 +313,30 @@ int avatronics_test() {
     return 0;
   } 
 
+MicroPrintf("\n arena_used_bytes: %d\n", global_interpreter->arena_used_bytes());
+
   /*Test return_value_test*/
-  if (return_value_test(&numElementsInputTensors, inputTensors, inputTensorShapes,
-                       &numElementsOutputTensors, outputTensors, outputTensorShapes)) {
-    MicroPrintf("\nRETURN_VALUE_TEST FAILS!\n");
-    return 0;
+  if (TEST_RETURN_VALUE) {
+      return_value_test(&numElementsInputTensors, inputTensors, inputTensorShapes,
+                        &numElementsOutputTensors, outputTensors, outputTensorShapes);
+      
+      if (numElementsInputTensors != 1) {
+          MicroPrintf("\nnumElementsInputTensors != 1!\n");
+          return 1;
+      }
+      if (inputTensors[0][0] != 2) {
+          MicroPrintf("\ninputTensors[0][0] != 2!\n");
+          return 2;
+      }
+      if (numElementsOutputTensors != 3) {
+          MicroPrintf("\nnumElementsOutputTensors != 3!\n");
+          return 3;
+      }
+      if (outputTensors[0][0] != 4) {
+          MicroPrintf("\noutputTensors[0][0] != 4!\n");
+          return 4;
+      }
+      MicroPrintf("\nRETURN_VALUE_TEST SUCCESS!\n");
   }
   
   /*Test wrapper_nn_inference*/

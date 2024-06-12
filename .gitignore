@@ -16,3 +16,4 @@ gen
 /*.txt
 /*.pdf
 tensorflow/lite/micro/examples/avatronics/unused_models/*
+prints/*

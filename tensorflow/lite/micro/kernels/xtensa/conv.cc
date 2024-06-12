@@ -28,6 +28,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/kernels/xtensa/xtensa.h"
 #include "tensorflow/lite/micro/kernels/xtensa/xtensa_conv.h"
 #include "tensorflow/lite/micro/micro_log.h"
+#include "tensorflow/lite/micro/examples/avatronics/config.h"
 
 namespace tflite {
 namespace {
@@ -56,7 +57,7 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 
   switch (input->type) {
     case kTfLiteFloat32: {
-      MicroPrintf("\nkTfLiteFloat32");
+      MicroPrintf("\nkTfLiteFloat32\n");
       // return ConvEvalHifiFloat32(context, node, params, op_data, input, filter, /* AVA self made*/
       //                     bias, output);
       tflite::reference_ops::Conv(
@@ -73,9 +74,10 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
       break;
     }
     case kTfLiteInt8: {
+      MicroPrintf(" - kTfLiteInt8\n");
 #if defined(HIFI3) || defined(HIFI4) || defined(HIFI5)
       if (params.dilation_width_factor == 1 &&
-          params.dilation_height_factor == 1) {
+          params.dilation_height_factor == 1) { // no diliation - "inserted gaps(zeros)"
         return ConvEvalHifiInt8(context, node, params, op_data, input, filter,
                                 bias, output);
       } else {
