@@ -69,6 +69,35 @@ inline void ConvPerChannel(
   TFLITE_DCHECK_NE(filters_per_group, 0);
   const int output_height = output_shape.Dims(1);
   const int output_width = output_shape.Dims(2);
+#if PRINT_TFLM_CONV2D 
+  MicroPrintf("\n\nConvPerChannel\n");
+  MicroPrintf("output_multiplier: %d\n", *output_multiplier);
+  MicroPrintf("output_shift: %d\n", *output_shift);
+  MicroPrintf("input_offset: %d\n", input_offset);
+  MicroPrintf("output_offset: %d\n", output_offset);
+  MicroPrintf("stride_width: %d\n", stride_width);
+  MicroPrintf("stride_height: %d\n", stride_height);
+  MicroPrintf("pad_width: %d\n", pad_width);
+  MicroPrintf("pad_height: %d\n", pad_height);
+  MicroPrintf("output_activation_min: %d\n", output_activation_min);
+  MicroPrintf("output_activation_max: %d\n\n\n", output_activation_max);
+  MicroPrintf("batches: %d\n", batches);
+  MicroPrintf("input_depth: %d\n", input_depth);
+  MicroPrintf("output_depth: %d\n", output_depth);
+  MicroPrintf("input_height: %d\n", input_height);
+  MicroPrintf("input_width: %d\n", input_width);
+  MicroPrintf("filter_height: %d\n", filter_height);
+  MicroPrintf("filter_width: %d\n", filter_width);
+  MicroPrintf("output_height: %d\n", output_height);
+  MicroPrintf("output_width: %d\n", output_width);
+  MicroPrintf("input_data: %d\n", *input_data);
+  MicroPrintf("filter_data: %d\n", *filter_data);
+  MicroPrintf("bias_data: %d\n", *bias_data);
+  MicroPrintf("dilation_width_factor: %d\n", dilation_width_factor);
+  MicroPrintf("dilation_height_factor: %d\n", dilation_height_factor);
+  MicroPrintf("filter_input_depth: %d\n", filter_input_depth);
+#endif // PRINT_TFLM_CONV2D
+
   for (int batch = 0; batch < batches; ++batch) {
     for (int out_y = 0; out_y < output_height; ++out_y) {
       const int in_y_origin = (out_y * stride_height) - pad_height;

@@ -28,6 +28,9 @@ namespace tflite {
 namespace {
 
 TfLiteStatus ConvEval(TfLiteContext* context, TfLiteNode* node) {
+#if PRINT_TFLM_CONV2D
+  MicroPrintf("\nIn tflite "); 
+#endif // PRINT_TFLM_CONV2D
   const TfLiteEvalTensor* input =
       tflite::micro::GetEvalInput(context, node, kConvInputTensor);
   RuntimeShape input_shape = GetEvalTensorShape(input);
@@ -123,6 +126,28 @@ TfLiteStatus ConvEval(TfLiteContext* context, TfLiteNode* node) {
           break;
         }
         case kTfLiteInt8: {
+#if PRINT_TFLM_CONV2D
+            MicroPrintf(" - kTfLiteInt8\n");
+            MicroPrintf("\nInput tensor (%d) \n", input_params);
+            for(int i=0; i < input_params; i++){
+              if (i % 14 == 0 && i != 0) MicroPrintf("\n");
+              MicroPrintf("%d, ", input->data.int8[i]);
+            }
+
+            MicroPrintf("\nfilter tensor (%d) \n", filter_params);
+            for(int i=0; i < filter_params; i++){
+              if (i % 14 == 0 && i != 0) MicroPrintf("\n");
+              MicroPrintf("%d, ", filter->data.int8[i]);
+            }
+
+            MicroPrintf("\nbias tensor (%d)\n", bias_params);
+            for(int i=0; i < bias_params; i++){
+              if (i % 14 == 0 && i != 0) MicroPrintf("\n");
+              MicroPrintf("%d, ", bias->data.int8[i]);
+            }
+
+            MicroPrintf("\n\n");
+#endif // PRINT_TFLM_CONV2D
           reference_integer_ops::ConvPerChannel(
               ConvParamsQuantized(params, data),
               data.per_channel_output_multiplier, data.per_channel_output_shift,
