@@ -7,9 +7,13 @@
 
 /* Enables time measurement - BUILD_TYPE should be 'release' for this to work.
  *  0 to disable.
- *  1 to enable for micro_interpreter_graph.cc.
- *  2 to enable for airoha_nn_model.cc. */
-#define MEASURE_CYCLES_TAKEN 1
+ *  1 to enable for inner loop.
+ *  2 to enable for one inference. */
+#define MEASURE_CYCLES_TAKEN 0
+
+/* Enables extended log for a specfic operator. */ 
+#define PRINT_XTENSA_CONV2D 1
+#define PRINT_TFLM_CONV2D 1
 
 /* Print the values of the intermediate tensors in the model.
  * Set to 1 to enable, 0 to disable. */

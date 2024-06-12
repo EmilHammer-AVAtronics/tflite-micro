@@ -159,6 +159,15 @@ TfLiteStatus ConvEval(TfLiteContext* context, TfLiteNode* node) {
               tflite::micro::GetOptionalTensorData<int32_t>(bias),
               tflite::micro::GetTensorShape(output),
               tflite::micro::GetTensorData<int8_t>(output));
+#if PRINT_XTENSA_CONV2D
+          MicroPrintf("\n ");
+          MicroPrintf("\noutput tensor (%d)\n ", output_params);
+          for(int i=0; i < output_params; i++){
+            if (i % 14 == 0 && i != 0) MicroPrintf("\n"); 
+            MicroPrintf("%d, ", output->data.int8[i]); 
+          }
+          MicroPrintf("\n ");
+#endif
           break;
         }
         default:

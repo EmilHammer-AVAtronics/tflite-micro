@@ -29,8 +29,18 @@ limitations under the License.
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/kernels/xtensa/xtensa.h"
 #include "tensorflow/lite/micro/kernels/xtensa/xtensa_conv.h"
+#include "tensorflow/lite/micro/examples/avatronics/config.h"
 
 namespace tflite {
+
+    int getParamsOfTensor(RuntimeShape tensor){
+    int dims = tensor.DimensionsCount();
+    int ret =1;
+    for (int i = 0; i < dims; i++){
+      ret *= tensor.Dims(i);
+    }
+    return ret;
+  }
 
 TfLiteStatus ConvPrepareHifi(TfLiteContext* context, TfLiteNode* node) {
   XtensaConvOpData* data = static_cast<XtensaConvOpData*>(node->user_data);
@@ -61,9 +71,7 @@ TfLiteStatus ConvPrepareHifi(TfLiteContext* context, TfLiteNode* node) {
   inputs_and_bias_ok =
       inputs_and_bias_ok &&
       (input->type == kTfLiteInt8 ||
-       (input->type == kTfLiteInt16 && bias->type == kTfLiteInt64)
-       || (input->type == kTfLiteFloat32)
-       );
+       (input->type == kTfLiteInt16 && bias->type == kTfLiteInt64));
 #else
   inputs_and_bias_ok = inputs_and_bias_ok && (input->type == kTfLiteInt8);
 #endif  // defined(HIFI3) || defined(HIFI4) || defined(HIFI5)
@@ -267,6 +275,72 @@ TfLiteStatus ConvEvalHifiInt8(TfLiteContext* context, TfLiteNode* node,
   int output_data_format = 0;
   int out_length = output_height * output_width * output_depth;
 
+#if PRINT_XTENSA_CONV2D
+int16_t input_params = getParamsOfTensor(input_shape);
+int16_t filter_params =getParamsOfTensor(filter_shape);
+const RuntimeShape& bias_shape = tflite::micro::GetTensorShape(bias);
+int16_t bias_params = getParamsOfTensor(bias_shape);
+int16_t output_params = getParamsOfTensor(output_shape);
+
+  MicroPrintf("\nInput tensor (%d) \n", input_params);
+  for(int i=0; i < input_params; i++){
+    if (i % 14 == 0 && i != 0) {
+            MicroPrintf("\n");
+      }
+  MicroPrintf("%d, ", input->data.int8[i]);
+  }
+
+  MicroPrintf("\nfilter tensor (%d) \n", filter_params);
+  for(int i=0; i < filter_params; i++){
+    if (i % 14 == 0 && i != 0) {
+            MicroPrintf("\n");
+      }
+  MicroPrintf("%d, ", filter->data.int8[i]);
+  }
+
+  MicroPrintf("\nbias tensor (%d)\n", bias_params);
+  for(int i=0; i < bias_params; i++){
+    if (i % 14 == 0 && i != 0) {
+            MicroPrintf("\n");
+      }
+  MicroPrintf("%d, ", bias->data.int8[i]);
+  }
+  
+  MicroPrintf("\n\n");
+  MicroPrintf("\n\n");
+  MicroPrintf("ConvEvalHifiInt8\n");
+  MicroPrintf("output_multiplier: %d\n", *data.reference_op_data.per_channel_output_multiplier);
+  MicroPrintf("output_shift: %d\n", *data.reference_op_data.per_channel_output_shift);
+  MicroPrintf("input_offset: %d\n",input_offset);
+  MicroPrintf("output_offset: %d\n",output_offset);
+  MicroPrintf("stride_width: %d\n",stride_width);
+  MicroPrintf("stride_height: %d\n",stride_height);
+  MicroPrintf("pad_width: %d\n",pad_width);
+  MicroPrintf("pad_height: %d\n",pad_height);
+  MicroPrintf("output_activation_min: %d\n",output_activation_min);
+  MicroPrintf("output_activation_max: %d\n",output_activation_max);
+  MicroPrintf("\n\n");
+  MicroPrintf("batches: %d\n",batches);
+  MicroPrintf("input_depth: %d\n",input_depth);
+  MicroPrintf("output_depth: %d\n",output_depth);
+  MicroPrintf("input_height: %d\n",input_height);
+  MicroPrintf("input_width: %d\n",input_width);
+  MicroPrintf("filter_height: %d\n",filter_height);
+  MicroPrintf("filter_width: %d\n",filter_width);
+  MicroPrintf("output_height: %d\n",output_height);
+  MicroPrintf("output_width: %d\n",output_width);
+  MicroPrintf("input_data: %d\n",*input_data);
+  MicroPrintf("filter_data: %d\n", *filter_data);
+  MicroPrintf("bias_data: %d\n", *bias_data);
+  MicroPrintf("dilation_width_factor: %d\n", params.dilation_width_factor);
+  MicroPrintf("dilation_height_factor: %d\n", params.dilation_height_factor);
+  MicroPrintf("filter_input_depth: %d\n", filter_shape.Dims(3));
+  MicroPrintf("output_data_format: %d\n", output_data_format);
+  MicroPrintf("out_length: %d\n", out_length);
+
+  MicroPrintf("\n ");
+#endif // PRINT_XTENSA_CONV2D
+
   if (filter_height == 1 && filter_width == 1) {
     for (int batch = 0; batch < batches; ++batch) {
       int8_t* p_out_temp;
@@ -296,7 +370,7 @@ TfLiteStatus ConvEvalHifiInt8(TfLiteContext* context, TfLiteNode* node,
     void* p_scratch = static_cast<void*>(
         context->GetScratchBuffer(context, data.scratch_tensor_index));
 
-    for (int batch = 0; batch < batches; ++batch) {
+    for (int batch = 0; batch < batches; ++batch) { // <-- running this function
       int8_t* p_out_temp;
       p_out_temp = &output_data[batch * out_length];
 
@@ -325,6 +399,17 @@ TfLiteStatus ConvEvalHifiInt8(TfLiteContext* context, TfLiteNode* node,
     }
   }
 
+  #if PRINT_XTENSA_CONV2D
+    MicroPrintf("\noutput tensor (%d)\n", output_params);
+    for(int i=0; i < output_params; i++){
+      if (i % 14 == 0 && i != 0) {
+              MicroPrintf("\n");
+        }
+    MicroPrintf("%d, ", output->data.int8[i]);
+    }
+    MicroPrintf("\n");
+
+  #endif // PRINT_XTENSA_CONV2D
   return kTfLiteOk;
 }
 
