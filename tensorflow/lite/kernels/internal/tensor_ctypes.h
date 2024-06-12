@@ -37,6 +37,9 @@ inline const T* GetTensorData(const TfLiteTensor* tensor) {
 TFLITE_NOINLINE RuntimeShape GetTensorShape(const TfLiteTensor* tensor);
 RuntimeShape GetTensorShape(std::vector<int32_t> data);
 
+TFLITE_NOINLINE RuntimeShape GetEvalTensorShape(const TfLiteEvalTensor* tensor);
+RuntimeShape GetTensorShape(std::vector<int32_t> data);
+
 }  // namespace tflite
 
 #endif  // TENSORFLOW_LITE_KERNELS_INTERNAL_TENSOR_CTYPES_H_

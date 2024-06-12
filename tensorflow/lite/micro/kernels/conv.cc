@@ -30,14 +30,25 @@ namespace {
 TfLiteStatus ConvEval(TfLiteContext* context, TfLiteNode* node) {
   const TfLiteEvalTensor* input =
       tflite::micro::GetEvalInput(context, node, kConvInputTensor);
+  RuntimeShape input_shape = GetEvalTensorShape(input);
+  int input_params =getParamsOfTensor(input_shape);
+
   const TfLiteEvalTensor* filter =
       tflite::micro::GetEvalInput(context, node, kConvWeightsTensor);
+  RuntimeShape filter_shape = GetEvalTensorShape(filter);
+  int filter_params =getParamsOfTensor(filter_shape);
+
   const TfLiteEvalTensor* bias =
       (NumInputs(node) == 3)
           ? tflite::micro::GetEvalInput(context, node, kConvBiasTensor)
           : nullptr;
+  RuntimeShape bias_shape = GetEvalTensorShape(bias);
+  int bias_params =getParamsOfTensor(bias_shape);
+
   TfLiteEvalTensor* output =
       tflite::micro::GetEvalOutput(context, node, kConvOutputTensor);
+  RuntimeShape output_shape = GetEvalTensorShape(output);
+  int output_params =getParamsOfTensor(output_shape);
 
   TFLITE_DCHECK(node->builtin_data != nullptr);
   const auto& params =
