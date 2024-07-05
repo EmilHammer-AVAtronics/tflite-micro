@@ -11,21 +11,21 @@
  *  2 to enable for one inference. */
 #define MEASURE_CYCLES_TAKEN 0
 
-/* Enables extended log for a specfic operator. */ 
-#define PRINT_XTENSA_CONV2D 1
-#define PRINT_TFLM_CONV2D 1
+/* Enables extended log for a specfic operator. */
+#define PRINT_XTENSA_CONV2D 0
+#define PRINT_TFLM_CONV2D 0
 
 /* Print the values of the intermediate tensors in the model.
  * 1 to enable
  * 0 to disable. */
-#define PRINT_INTERMEDIATE_TENSORS 1
+#define PRINT_INTERMEDIATE_TENSORS 0
 
 #if PRINT_INTERMEDIATE_TENSORS //
     /* Set to 1 to print the full tensor when PRINT_INTERMEDIATE_TENSORS is enabled.
      * Set to 0 to print a summary instead. */
     #define PRINT_FULL_TENSOR 1
 #else
-    #define PRINT_FULL_TENSOR 1
+    #define PRINT_FULL_TENSOR 0
 #endif // PRINT_INTERMEDIATE_TENSORS
 
 /* ================================
@@ -48,7 +48,5 @@
  * Model TEST
  * ================================ */
 #define TEST_RETURN_VALUE 0
-
-
 
 #endif /* CONFIG_H */

@@ -46,25 +46,28 @@ TfLiteStatus ConvEval(TfLiteContext* context, TfLiteNode* node) {
 #endif // PRINT_TFLM_CONV2D
   const TfLiteEvalTensor* input =
       tflite::micro::GetEvalInput(context, node, kConvInputTensor);
-  RuntimeShape input_shape = GetEvalTensorShape(input);
-  int input_params =getParamsOfTensor(input_shape);
-
   const TfLiteEvalTensor* filter =
       tflite::micro::GetEvalInput(context, node, kConvWeightsTensor);
-  RuntimeShape filter_shape = GetEvalTensorShape(filter);
-  int filter_params =getParamsOfTensor(filter_shape);
-
   const TfLiteEvalTensor* bias =
       (NumInputs(node) == 3)
           ? tflite::micro::GetEvalInput(context, node, kConvBiasTensor)
           : nullptr;
-  RuntimeShape bias_shape = GetEvalTensorShape(bias);
-  int bias_params =getParamsOfTensor(bias_shape);
-
   TfLiteEvalTensor* output =
       tflite::micro::GetEvalOutput(context, node, kConvOutputTensor);
+
+#if PRINT_TFLM_CONV2D
+  RuntimeShape input_shape = GetEvalTensorShape(input);
+  int input_params = getParamsOfTensor(input_shape);
+
+  RuntimeShape filter_shape = GetEvalTensorShape(filter);
+  int filter_params = getParamsOfTensor(filter_shape);
+
+  RuntimeShape bias_shape = GetEvalTensorShape(bias);
+  int bias_params = getParamsOfTensor(bias_shape);
+
   RuntimeShape output_shape = GetEvalTensorShape(output);
-  int output_params =getParamsOfTensor(output_shape);
+  int output_params = getParamsOfTensor(output_shape);
+#endif
 
   TFLITE_DCHECK(node->builtin_data != nullptr);
   const auto& params =
@@ -172,7 +175,7 @@ TfLiteStatus ConvEval(TfLiteContext* context, TfLiteNode* node) {
               tflite::micro::GetOptionalTensorData<int32_t>(bias),
               tflite::micro::GetTensorShape(output),
               tflite::micro::GetTensorData<int8_t>(output));
-#if PRINT_XTENSA_CONV2D
+#if PRINT_TFLM_CONV2D
           MicroPrintf("\n ");
           MicroPrintf("\noutput tensor (%d)\n ", output_params);
           for(int i=0; i < output_params; i++){

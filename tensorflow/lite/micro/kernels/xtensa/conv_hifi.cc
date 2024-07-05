@@ -33,14 +33,14 @@ limitations under the License.
 
 namespace tflite {
 
-    int getParamsOfTensor(RuntimeShape tensor){
-    int dims = tensor.DimensionsCount();
-    int ret =1;
-    for (int i = 0; i < dims; i++){
-      ret *= tensor.Dims(i);
-    }
-    return ret;
+int xtensa_getParamsOfTensor(RuntimeShape tensor){
+  int dims = tensor.DimensionsCount();
+  int ret =1;
+  for (int i = 0; i < dims; i++){
+    ret *= tensor.Dims(i);
   }
+  return ret;
+}
 
 TfLiteStatus ConvPrepareHifi(TfLiteContext* context, TfLiteNode* node) {
   XtensaConvOpData* data = static_cast<XtensaConvOpData*>(node->user_data);
@@ -276,11 +276,11 @@ TfLiteStatus ConvEvalHifiInt8(TfLiteContext* context, TfLiteNode* node,
   int out_length = output_height * output_width * output_depth;
 
 #if PRINT_XTENSA_CONV2D
-int16_t input_params = getParamsOfTensor(input_shape);
-int16_t filter_params =getParamsOfTensor(filter_shape);
+int16_t input_params = xtensa_getParamsOfTensor(input_shape);
+int16_t filter_params = xtensa_getParamsOfTensor(filter_shape);
 const RuntimeShape& bias_shape = tflite::micro::GetTensorShape(bias);
-int16_t bias_params = getParamsOfTensor(bias_shape);
-int16_t output_params = getParamsOfTensor(output_shape);
+int16_t bias_params = xtensa_getParamsOfTensor(bias_shape);
+int16_t output_params = xtensa_getParamsOfTensor(output_shape);
 
   MicroPrintf("\nInput tensor (%d) \n", input_params);
   for(int i=0; i < input_params; i++){

@@ -27,4 +27,6 @@ extern "C" int wrapper_nn_inference_double(int8_t* numElementsInputTensors, doub
 
 extern "C" int wrapper_nn_inference_test(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* intputTensorShapes, int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorShapes);
 
-extern "C" int return_value_test(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* intputTensorShapes, int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorShapes);
+extern "C" int tflm_inference(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* intputTensorShapes, int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorShapes);
+
+extern "C" int tflm_return_value_test(int8_t* numElementsInputTensors, double** inputTensors, int8_t* numElementsOutputTensors, double** outputTensors);

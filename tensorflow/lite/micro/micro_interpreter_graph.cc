@@ -52,6 +52,7 @@ int num_ops=0;
 namespace tflite {
 namespace {
 
+#if PRINT_INTERMEDIATE_TENSORS
 const char* TfLiteTypeName(TfLiteType type) {
     switch (type) {
         case kTfLiteNoType: return "kTfLiteNoType";
@@ -77,6 +78,7 @@ const char* TfLiteTypeName(TfLiteType type) {
         default: return "UnknownType";
     }
 }
+#endif // PRINT_INTERMEDIATE_TENSORS 
 
 const char* OpNameFromRegistration(const TFLMRegistration* registration) {
   if (registration->builtin_code == BuiltinOperator_CUSTOM) {

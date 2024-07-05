@@ -74,7 +74,9 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
       break;
     }
     case kTfLiteInt8: {
+#if PRINT_XTENSA_CONV2D
       MicroPrintf(" - kTfLiteInt8\n");
+#endif //PRINT_XTENSA_CONV2D 
 #if defined(HIFI3) || defined(HIFI4) || defined(HIFI5)
       if (params.dilation_width_factor == 1 &&
           params.dilation_height_factor == 1) { // no diliation - "inserted gaps(zeros)"
