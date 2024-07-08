@@ -7,8 +7,7 @@ extern "C" int inputs_size();
 
 extern "C" int outputs_size();
 
-extern "C" int wrapper_nn_setup();
-
+extern "C" int8_t nn_setup();
 /**
  * Perform neural network inference using the provided input and output tensors.
  * @param numOfInputs Pointer to a variable holding the number of input tensors.
@@ -21,12 +20,6 @@ extern "C" int wrapper_nn_setup();
  *         0 indicates success, while other values indicate errors.
  */ 
 
-extern "C" int wrapper_nn_inference_int32(int8_t* numElementsInputTensors, int32_t** inputTensors, const int32_t* intputTensorShapes, int8_t* numElementsOutputTensors, int32_t** outputTensors, const int32_t* outputTensorShapes);
-
-extern "C" int wrapper_nn_inference_double(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* intputTensorShapes, int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorShapes);
-
-extern "C" int wrapper_nn_inference_test(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* intputTensorShapes, int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorShapes);
-
-extern "C" int tflm_inference(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* intputTensorShapes, int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorShapes);
+extern "C" int8_t tflm_inference(int8_t* numElementsInputTensors, double** inputTensors, const int32_t* intputTensorShapes, int8_t* numElementsOutputTensors, double** outputTensors, const int32_t* outputTensorShapes);
 
 extern "C" int tflm_return_value_test(int8_t* numElementsInputTensors, double** inputTensors, int8_t* numElementsOutputTensors, double** outputTensors);
